@@ -1,0 +1,14 @@
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\bin\Debug\net8.0\Curt.exe
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\bin\Debug\net8.0\Curt.deps.json
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\bin\Debug\net8.0\Curt.runtimeconfig.json
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\bin\Debug\net8.0\Curt.dll
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\bin\Debug\net8.0\Curt.pdb
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.AssemblyInfoInputs.cache
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.AssemblyInfo.cs
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.csproj.CoreCompileInputs.cache
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.dll
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\refint\Curt.dll
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.pdb
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.genruntimeconfig.cache
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\ref\Curt.dll
