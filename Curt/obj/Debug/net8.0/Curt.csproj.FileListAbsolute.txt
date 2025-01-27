@@ -12,3 +12,4 @@ C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\refi
 C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.pdb
 C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.genruntimeconfig.cache
 C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\ref\Curt.dll
+C:\Users\curle\Desktop\Code\WorksInProgress\Curt\Curt\Curt\obj\Debug\net8.0\Curt.sourcelink.json

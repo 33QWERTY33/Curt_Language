@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-using nodes;
+﻿using nodes;
 using Tokenizer;
 using static Tokenizer.TokType;
 
@@ -58,14 +50,17 @@ namespace Parsing
         // assignment_statement -> "make" IDENTIFIER expression ";"
         private Stmt assignment()
         {
+            Console.WriteLine("[INFO] INSIDE ASSIGNMENT");
             advance(); // this was the 'make' keyword
             Token identifier = consume(IDENTIFIER, "Expected identifier after 'make' keyword.");
+            consume(EQUAL, "Expected '=' after identifier in assignment statement");
             object value = expression();
             return new Assignment(identifier.lexeme, value);
         }
         // if_statement -> "if" "(" expression ")" block("elif" "(" expression ")" block)* ("else" block)?
         private Stmt ifStmt()
         {
+            Console.WriteLine("[INFO] INSIDE IF");
             advance(); // this was the 'if' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'if' keyword.");
             Expr ifCondition = expression();
@@ -77,6 +72,7 @@ namespace Parsing
 
             while (peek().type == ELIF)
             {
+                Console.WriteLine("[INFO] INSIDE ELIF");
                 advance(); // this was the 'elif' keyword
                 consume(LEFT_PAREN, "Expected '(' character after 'elif' keyword.");
                 elifConditions.Append(expression());
@@ -88,6 +84,7 @@ namespace Parsing
 
             if (peek().type == ELSE)
             {
+                Console.WriteLine("[INFO] INSIDE ELSE");
                 advance(); // this was the 'else' keyword
                 elseBlock = block();
             }
@@ -98,6 +95,7 @@ namespace Parsing
         // while_statement -> "while" "(" expression ")" block
         private Stmt whileStmt()
         {
+            Console.WriteLine("[INFO] INSIDE WHILE");
             advance(); // this was the 'while' keyword
             consume(LEFT_PAREN, "Expected ')' character after 'while' keyword.");
             Expr whileCondition = expression();
@@ -108,6 +106,7 @@ namespace Parsing
         // for_statement -> "for" "(" assignment_statement ";" expression ";" expression ")" block
         private Stmt forStmt()
         {
+            Console.WriteLine("[INFO] INSIDE FOR");
             advance(); // this was the 'for' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'for' keyword.");
             Stmt start = assignment();
@@ -156,26 +155,28 @@ namespace Parsing
             {
                 Token token = advance(); // this is our operator
                 Expr right = unary();
-                expr =  new Arithmetic(token.line, token.type, expr, right);
+                expr = new Arithmetic(token.line, token.type, expr, right);
             }
             return expr;
         }
 
-        // unary -> ("not" | "-" | "++" | "--")* literal
+        // unary -> ("not" | "-" | "++" | "--") unary | literal
         private Expr unary()
         {
             Console.WriteLine("[INFO] INSIDE UNARY");
             TokType t = peek().type;
-            if (t == INCREMENT || t == DECREMENT)
+            if (t == INCREMENT || t == DECREMENT || t == NOT || t == MINUS)
             {
-                Token token = advance();
-                Expr val = literal();
-                return new Step(token.line, token.type, val);
-            } else if (t == NOT || t == MINUS)
-            {
-                Token token = advance();
-                Expr val = literal();
-                return new Negation(token.line, token.type, val);
+                Token op = advance();
+                Expr right = unary();
+                if (t == INCREMENT || t == DECREMENT)
+                {
+                    return new Step(op.line, op.type, right);
+                }
+                else if (t == NOT || t == MINUS)
+                {
+                    return new Negation(op.line, op.type, right);
+                }
             }
             return literal();
         }
@@ -184,9 +185,9 @@ namespace Parsing
         {
             Console.WriteLine("[INFO] INSIDE LITERAL");
             Token t = peek();
-            switch(t.type)
+            switch (t.type)
             {
-                case IDENTIFIER: advance();  return new Identifier(t.lexeme, t.line);
+                case IDENTIFIER: advance(); return new Identifier(t.lexeme, t.line);
                 case NUMBER: advance(); return new Number(t.lexeme, t.line);
                 case STRING: advance(); return new nodes.String(t.lexeme, t.line);
                 case TRUE: advance(); return new nodes.Boolean(t.lexeme, t.line);
@@ -201,7 +202,7 @@ namespace Parsing
                     }
                     error(peek(), $"Unexpected token: {peek().lexeme}");
                     advance(); // Skip the unexpected token to avoid infinite loop
-                    return null; // Handle this error more robustly in the future
+                    return null; // [WIP] Handle this error more robustly in the future
             }
         }
 
@@ -214,7 +215,7 @@ namespace Parsing
 
             error(peek(), msg);
             return new Token(EOF, "ERROR", "ERROR", 0);
-            // I want to find a better way to handle this later
+            // [WIP] I want to find a better way to handle this later
         }
 
         static void error(Token token, string msg)
@@ -222,7 +223,8 @@ namespace Parsing
             if (token.type == EOF)
             {
                 Curt.report(token.line, " at end", msg);
-            } else
+            }
+            else
             {
                 Curt.report(token.line, " at '" + token.lexeme + "'", msg);
             }
@@ -248,6 +250,7 @@ namespace Parsing
         private Token advance()
         {
             if (!isAtEnd()) currentToken++;
+            Console.WriteLine("[INFO] ADVANCED OVER " + tokens[currentToken - 1] + " NOW ON " + tokens[currentToken]);
             return previous();
         }
 
@@ -278,4 +281,3 @@ namespace Parsing
         }
     }
 }
-

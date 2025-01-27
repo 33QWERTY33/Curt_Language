@@ -8,7 +8,7 @@ namespace nodes
     {
         protected TokType type;
         public Delegate operation;
-        protected object value;
+        protected Expr? value;
         protected int line;
         public static object Execute(Unary node)
         {
@@ -19,16 +19,16 @@ namespace nodes
     {
         private static readonly Func<int, int> arithmeticNegation = (int p1) => -p1;
         private static readonly Func<bool, bool> logicalNegation = (bool p1) => !p1;
-        public Negation(int line, TokType type, object value)
+        public Negation(int line, TokType type, Expr value)
         {
             base.line = line;
             base.type = type;
             base.value = value;
-            if (type == TRUE || type == FALSE)
+            if (type == NOT)
             {
                 base.operation = logicalNegation;
             }
-            else if (type == NUMBER)
+            else if (type == MINUS)
             {
                 base.operation = arithmeticNegation;
             }
@@ -44,7 +44,7 @@ namespace nodes
     {
         private static readonly Func<int, int> increment = (int p1) => p1++;
         private static readonly Func<int, int> decrement = (int p1) => p1--;
-        public Step(int line, TokType op, object value)
+        public Step(int line, TokType op, Expr value)
         {
             base.line = line;
             base.type = op;
@@ -83,7 +83,7 @@ namespace nodes
         private static readonly Func<bool, bool, bool> and = (bool p1, bool p2) => p1 && p2;
         private static readonly Func<bool, bool, bool> or = (bool p1, bool p2) => p1 || p2;
 
-        public Comparison(int line, TokType op, object value1, object value2)
+        public Comparison(int line, TokType op, Expr value1, Expr value2)
         {
             base.line = line;
             base.type = op;
@@ -126,7 +126,7 @@ namespace nodes
         private static readonly Func<int, int, int> mod = (int p1, int p2) => p1 % p2;
 
 
-        public Arithmetic(int line, TokType op, object value1, object value2)
+        public Arithmetic(int line, TokType op, Expr value1, Expr value2)
         {
             base.line = line;
             base.type = op;

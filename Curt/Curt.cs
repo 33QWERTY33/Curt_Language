@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 public class Curt {
     public static bool hadSyntaxError;
     public static bool hadParseError;
+    public static bool hadRuntimeError;
     public static void Main(string[] args) {
         if (args.Length > 2) {
            Console.Error.WriteLine("[ERROR] Invalid number of arguments provided");
@@ -21,6 +22,8 @@ public class Curt {
 
     private static void runPrompt() {
         while (true) {
+            hadSyntaxError = false;
+            hadParseError = false;
             Console.Write(">>> ");
             string stmt = Console.ReadLine();
             run(stmt);
@@ -69,7 +72,9 @@ public class Curt {
     // ######################
 
     public static void error(int line, string msg) {
-        Console.Error.WriteLine("[Line + " + line + "] Error: " + msg);
+        hadParseError = true;
+        hadSyntaxError = true;
+        Console.Error.WriteLine("[Line " + line + "] Error: " + msg);
     }
 
     public static void report(int line, string where, string msg)
