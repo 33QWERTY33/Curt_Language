@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using Tokenizer;
 using Parsing;
 using nodes;
-using System.Runtime.CompilerServices;
+using Interpreting;
 
 public class Curt {
     public static bool hadSyntaxError;
@@ -25,7 +24,7 @@ public class Curt {
             hadSyntaxError = false;
             hadParseError = false;
             Console.Write(">>> ");
-            string stmt = Console.ReadLine();
+            string stmt = Console.ReadLine() ?? "  ";
             run(stmt);
         }
     }
@@ -49,7 +48,7 @@ public class Curt {
         }
         foreach (Token token in tokens)
         {
-            Console.WriteLine(token);
+            Console.WriteLine("[INFO: Tokenizer] " + token);
         }
 
         Parser parser = new Parser(tokens);
@@ -57,7 +56,7 @@ public class Curt {
 
         foreach (Stmt node in nodes)
         {
-            Console.WriteLine(node);
+            Console.WriteLine("[INFO: AST Root] " + node);
         }
 
         if (hadParseError)
@@ -65,6 +64,18 @@ public class Curt {
             return;
         }
 
+        Interpreter interpreter = new Interpreter(nodes);
+        List<object> results = new List<object>();
+        foreach (Stmt node in nodes)
+        {
+            try
+            {
+                Console.WriteLine("[INFO: Interpretation Results] " + interpreter.Resolve((Expr)nodes[0]));
+            } catch (Exception e)
+            {
+                Console.WriteLine("[INFO: Interpretation Results] This scenario is under development, redirected for demo purposes.");
+            }
+        }
     }
 
     // ######################
@@ -84,3 +95,9 @@ public class Curt {
         hadParseError = true;
     }
 }
+
+/*
+    Credits for the Scanner and Token classes go to Robert Nystrom as outlined in his book Crafting Interpreters.
+    Those are not my ideas, but it seemed like very efficient logic and doing it another way would just be damaging performance just to save face.
+    All of the other specific implementation details are my idea (for better or worse), such as stuffing functionality into the syntax tree nodes.
+ */

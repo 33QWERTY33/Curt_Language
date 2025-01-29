@@ -50,32 +50,31 @@ namespace Parsing
         // assignment_statement -> "make" IDENTIFIER expression ";"
         private Stmt assignment()
         {
-            Console.WriteLine("[INFO] INSIDE ASSIGNMENT");
             advance(); // this was the 'make' keyword
             Token identifier = consume(IDENTIFIER, "Expected identifier after 'make' keyword.");
             consume(EQUAL, "Expected '=' after identifier in assignment statement");
-            object value = expression();
+            Expr value = expression();
             return new Assignment(identifier.lexeme, value);
         }
         // if_statement -> "if" "(" expression ")" block("elif" "(" expression ")" block)* ("else" block)?
         private Stmt ifStmt()
         {
-            Console.WriteLine("[INFO] INSIDE IF");
+            Console.WriteLine("[INFO: Parser] INSIDE IF");
             advance(); // this was the 'if' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'if' keyword.");
-            Expr ifCondition = expression();
+            Comparison ifCondition = (Comparison)expression();
             consume(RIGHT_PAREN, "Expected ')' character after 'if' condition.");
             Block ifBlock = block();
 
-            List<Expr> elifConditions = new List<Expr>();
+            List<Comparison> elifConditions = new List<Comparison>();
             List<Block> elifBlocks = new List<Block>();
 
             while (peek().type == ELIF)
             {
-                Console.WriteLine("[INFO] INSIDE ELIF");
+                Console.WriteLine("[INFO: Parser] INSIDE ELIF");
                 advance(); // this was the 'elif' keyword
                 consume(LEFT_PAREN, "Expected '(' character after 'elif' keyword.");
-                elifConditions.Append(expression());
+                elifConditions.Append((Comparison)expression());
                 consume(RIGHT_PAREN, "Expected ')' character after 'elif' condition.");
                 elifBlocks.Append(block());
             }
@@ -84,7 +83,7 @@ namespace Parsing
 
             if (peek().type == ELSE)
             {
-                Console.WriteLine("[INFO] INSIDE ELSE");
+                Console.WriteLine("[INFO: Parser] INSIDE ELSE");
                 advance(); // this was the 'else' keyword
                 elseBlock = block();
             }
@@ -95,10 +94,10 @@ namespace Parsing
         // while_statement -> "while" "(" expression ")" block
         private Stmt whileStmt()
         {
-            Console.WriteLine("[INFO] INSIDE WHILE");
+            Console.WriteLine("[INFO: Parser] INSIDE WHILE");
             advance(); // this was the 'while' keyword
             consume(LEFT_PAREN, "Expected ')' character after 'while' keyword.");
-            Expr whileCondition = expression();
+            Comparison whileCondition = (Comparison)expression();
             consume(RIGHT_PAREN, "Expected ')' character after 'while' condition.");
             Block whileBlock = block();
             return new While(whileCondition, whileBlock);
@@ -106,14 +105,14 @@ namespace Parsing
         // for_statement -> "for" "(" assignment_statement ";" expression ";" expression ")" block
         private Stmt forStmt()
         {
-            Console.WriteLine("[INFO] INSIDE FOR");
+            Console.WriteLine("[INFO: Parser] INSIDE FOR");
             advance(); // this was the 'for' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'for' keyword.");
-            Stmt start = assignment();
+            Assignment start = (Assignment)assignment();
             consume(SEMICOLON, "Expected ';' after 'start' portion of for loop");
-            Expr stop = expression();
+            Comparison stop = (Comparison)expression();
             consume(SEMICOLON, "Expected ';' after 'stop' portion of for loop");
-            Expr step = expression();
+            Step step = (Step)expression();
             consume(RIGHT_PAREN, "Expected ')' character after 'for' condition.");
             Block forBlock = block();
             return new For(start, stop, step, forBlock);
@@ -134,7 +133,7 @@ namespace Parsing
         // comparison -> arithmetic((">" | ">=" | "<" | "<=" | "!=" | "==" | "and" | "or") arithmetic )* ;
         private Expr comparison()
         {
-            Console.WriteLine("[INFO] INSIDE COMPARISON");
+            Console.WriteLine("[INFO: Parser] INSIDE COMPARISON");
             Expr expr = arithmetic();
             while (check(GREATER) || check(GREATER_EQUAL) || check(LESS) || check(LESS_EQUAL) ||
                    check(BANG_EQUAL) || check(EQUAL_EQUAL) || check(AND) || check(OR))
@@ -149,7 +148,7 @@ namespace Parsing
         // arithmetic -> unary(("+" | "-" | "*" | "/" | "%") unary )* ;
         private Expr arithmetic()
         {
-            Console.WriteLine("[INFO] INSIDE ARITHMETIC");
+            Console.WriteLine("[INFO: Parser] INSIDE ARITHMETIC");
             Expr expr = unary();
             while (check(PLUS) || check(MINUS) || check(STAR) || check(SLASH) || check(PERCENT))
             {
@@ -163,7 +162,7 @@ namespace Parsing
         // unary -> ("not" | "-" | "++" | "--") unary | literal
         private Expr unary()
         {
-            Console.WriteLine("[INFO] INSIDE UNARY");
+            Console.WriteLine("[INFO: Parser] INSIDE UNARY");
             TokType t = peek().type;
             if (t == INCREMENT || t == DECREMENT || t == NOT || t == MINUS)
             {
@@ -183,7 +182,7 @@ namespace Parsing
         // literal -> IDENTIFIER | NUMBER | STRING | BOOLEAN | "(" expression ")" ;
         private Expr literal()
         {
-            Console.WriteLine("[INFO] INSIDE LITERAL");
+            Console.WriteLine("[INFO: Parser] INSIDE LITERAL");
             Token t = peek();
             switch (t.type)
             {
@@ -250,7 +249,7 @@ namespace Parsing
         private Token advance()
         {
             if (!isAtEnd()) currentToken++;
-            Console.WriteLine("[INFO] ADVANCED OVER " + tokens[currentToken - 1] + " NOW ON " + tokens[currentToken]);
+            Console.WriteLine("[INFO: Parser] ADVANCED OVER " + tokens[currentToken - 1] + " NOW ON " + tokens[currentToken]);
             return previous();
         }
 
