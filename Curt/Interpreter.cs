@@ -8,7 +8,7 @@ namespace Interpreting
     class Interpreter
     {
         List<Stmt> statements;
-        Dictionary<string, object> globals = new Dictionary<string, object>
+        public static Dictionary<string, object> globals = new Dictionary<string, object>
         {
             {"x", 10}
         };
@@ -16,21 +16,33 @@ namespace Interpreting
         {
             this.statements = statements;
         }
-        public object Resolve(Expr expr)
+
+        public object Interpret(Stmt stmt)
+        {
+            if (stmt.ntype == ASSIGNMENT)
+            {
+                Assignment resolvedStmt = (Assignment)stmt;
+                resolvedStmt.Execute(this);
+                return null;
+            } else
+            {
+                return this.Evaluate((Expr)stmt);
+            }
+        }
+        public object Evaluate(Expr expr)
         {
             if (expr.ntype == BINARY)
             {
                 Binary resolvedExpr = (Binary)expr;
-                object leftResult = Resolve(resolvedExpr.left);
-                object rightResult = Resolve(resolvedExpr.right);
+                object leftResult = Evaluate(resolvedExpr.left);
+                object rightResult = Evaluate(resolvedExpr.right);
 
                 return resolvedExpr.operation.DynamicInvoke(leftResult, rightResult);
-
             }
             else if (expr.ntype == UNARY)
             {
                 Unary resolvedExpr = (Unary)expr;
-                object rightResult = Resolve(resolvedExpr.right);
+                object rightResult = Evaluate(resolvedExpr.right);
 
                 return resolvedExpr.operation.DynamicInvoke(rightResult);
             }
@@ -38,7 +50,7 @@ namespace Interpreting
             {
                 Grouping resolvedExpr = (Grouping)expr;
 
-                return Resolve(resolvedExpr.expression);
+                return Evaluate(resolvedExpr.expression);
             }
             else if (expr.ntype == LITERAL)
             {
@@ -51,7 +63,6 @@ namespace Interpreting
                 object result = variable.operation.DynamicInvoke(globals, variable.name);
                 if (result != null) return result;
                 throw new IdentityNotMappedException($"The variable: {variable.name} is not defined");
-
             } else
             {
                 throw new InvalidOperationException("Unsupported expression type");

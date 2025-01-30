@@ -1,13 +1,26 @@
-﻿namespace nodes {
-    class Stmt { }
+﻿using Interpreting;
+using static nodes.NodeType;
+
+namespace nodes
+{
+    class Stmt
+    {
+        public virtual NodeType ntype { get; }
+        public virtual void Execute(Interpreter interpreter) { }
+    }
     class Assignment : Stmt
     {
         public string identifier;
         public Expr value;
+        public override NodeType ntype => ASSIGNMENT;
         public Assignment(string identifier, Expr value)
         {
             this.identifier = identifier;
             this.value = value;
+        }
+        public override void Execute (Interpreter interpreter)
+        {
+            Interpreter.globals.Add(identifier, interpreter.Evaluate(value));
         }
     }
     class If : Stmt

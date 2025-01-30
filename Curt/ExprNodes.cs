@@ -7,7 +7,6 @@ namespace nodes
 {
     class Expr : Stmt
     {
-        public virtual NodeType ntype { get; }
         public virtual Delegate operation { get; }
     }
     class Unary : Expr
