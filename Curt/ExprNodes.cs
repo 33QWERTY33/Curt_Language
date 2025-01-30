@@ -117,11 +117,19 @@ namespace nodes
     }
     class Identifier : Literal
     {
-        private string name;
+        public string name;
+        public override NodeType ntype => NodeType.IDENTIFIER;
         public Identifier(string name, int line)
         {
             this.name = name;
             this.line = line;
+        }
+        public override Delegate operation
+        {
+            get
+            {
+                return (Func<Dictionary<string, object>, string, object>)((dict, name) => dict.TryGetValue(name, out object value) ? value : null);
+            }
         }
     }
     class Number : Literal

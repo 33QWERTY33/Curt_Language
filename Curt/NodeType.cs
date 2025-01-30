@@ -6,6 +6,6 @@
         ASSIGNMENT, IF, WHILE, FOR, BLOCK,
 
         // Expressions
-        UNARY, BINARY, LITERAL, GROUPING
+        UNARY, BINARY, LITERAL, GROUPING, IDENTIFIER
     }
 }

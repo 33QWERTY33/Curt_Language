@@ -68,13 +68,7 @@ public class Curt {
         List<object> results = new List<object>();
         foreach (Stmt node in nodes)
         {
-            try
-            {
-                Console.WriteLine("[INFO: Interpretation Results] " + interpreter.Resolve((Expr)nodes[0]));
-            } catch (Exception e)
-            {
-                Console.WriteLine("[INFO: Interpretation Results] This scenario is under development, redirected for demo purposes.");
-            }
+            Console.WriteLine("[INFO: Interpretation Results] " + interpreter.Resolve((Expr)nodes[0]));
         }
     }
 
