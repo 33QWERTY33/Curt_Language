@@ -20,7 +20,7 @@ namespace nodes
         }
         public override void Execute (Interpreter interpreter)
         {
-            Interpreter.globals.Add(identifier, interpreter.Evaluate(value));
+            Interpreter.globals[identifier] = interpreter.Evaluate(value);
         }
     }
     class If : Stmt
