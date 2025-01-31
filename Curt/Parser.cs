@@ -196,6 +196,7 @@ namespace Parsing
                 case TRUE: advance(); return new nodes.Boolean(t.lexeme, t.line);
                 case FALSE: advance(); return new nodes.Boolean(t.lexeme, t.line);
                 case ASK: return ask();
+                case RANDINT: return randint();
                 default:
                     if (check(LEFT_PAREN))
                     {
@@ -210,7 +211,17 @@ namespace Parsing
             }
         }
 
-        // ask -> "ask" "(" """ STRING """ ")"
+        // ask -> "ask" "(" """ NUMBER """ ")"
+        private Expr randint()
+        {
+            advance(); // this was the 'randint' keyword
+            consume(LEFT_PAREN, "Expected '(' character after 'randint' keyword.");
+            Expr value = literal(); // random range
+            consume(RIGHT_PAREN, "Expected ')' character after 'randint' value.");
+            return new Randint(value);
+        }
+
+        // randint -> "randint" "(" INT ")"
         private Expr ask()
         {
             advance(); // this was the 'ask' keyword

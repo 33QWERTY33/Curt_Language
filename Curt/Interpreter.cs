@@ -67,9 +67,12 @@ namespace Interpreting
                 throw new IdentityNotMappedException($"The variable: {variable.name} is not defined");
             } else if (expr.ntype == ASK) {
                 Ask resolvedExpr = (Ask)expr;
-                return resolvedExpr.Execute((string)this.Evaluate(resolvedExpr.value));
-            }
-            else
+                return resolvedExpr.Execute((string)Evaluate(resolvedExpr.value));
+            } else if (expr.ntype == RANDINT)
+            {
+                Randint resolvedExpr = (Randint)expr;
+                return resolvedExpr.Execute(Evaluate(resolvedExpr.value));
+            } else
             {
                 throw new InvalidOperationException("Unsupported expression type");
             }

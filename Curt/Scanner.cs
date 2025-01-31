@@ -22,7 +22,8 @@ namespace Tokenizer
             {"elif", ELIF },
             {"make", MAKE },
             {"show", SHOW },
-            {"ask", ASK }};
+            {"ask", ASK },
+            {"randint", RANDINT }};
         private int start = 0;
         private int current = 0;
         private int line = 1;

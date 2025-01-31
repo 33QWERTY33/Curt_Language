@@ -191,3 +191,18 @@ class Ask : Expr
         return Console.ReadLine();
     }
 }
+class Randint : Expr
+{
+    public Expr value;
+    public override NodeType ntype => NodeType.RANDINT;
+    public Randint(Expr value) 
+    {
+        this.value = value;
+    }
+
+    public int Execute(object range)
+    {
+        Random random = new Random();
+        return random.Next(Convert.ToInt32(range));
+    }
+}
