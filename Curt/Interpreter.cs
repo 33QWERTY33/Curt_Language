@@ -8,15 +8,20 @@ namespace Interpreting
     class Interpreter
     {
         List<Stmt> statements;
-        public static Dictionary<string, object> globals = new Dictionary<string, object>
-        {
-            {"x", 10}
-        };
+        public static Dictionary<string, object> globals = new Dictionary<string, object> { };
         public Interpreter(List<Stmt> statements)
         {
             this.statements = statements;
         }
 
+        public object Interpret(List<Stmt> stmts)
+        {
+            foreach (Stmt stmt in stmts)
+            {
+                Interpret(stmt);
+            }
+            return null;
+        }
         public object Interpret(Stmt stmt)
         {
             if (stmt.ntype == ASSIGNMENT)
@@ -24,7 +29,24 @@ namespace Interpreting
                 Assignment resolvedStmt = (Assignment)stmt;
                 resolvedStmt.Execute(this);
                 return null;
-            } else
+            }
+            else if (stmt.ntype == IF)
+            {
+                If resolvedStmt = (If)stmt;
+                resolvedStmt.Execute(this);
+                return null;
+            } else if (stmt.ntype == BLOCK)
+            {
+                Block resolvedStmt = (Block)stmt;
+                resolvedStmt.Execute(this);
+                return null;
+            } else if (stmt.ntype == SHOW)
+            {
+                Show resolvedStmt = (Show)stmt;
+                resolvedStmt.Execute(this);
+                return null;
+            }
+            else
             {
                 return this.Evaluate((Expr)stmt);
             }

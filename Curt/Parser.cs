@@ -43,6 +43,7 @@ namespace Parsing
                 case IF: return ifStmt();
                 case WHILE: return whileStmt();
                 case FOR: return forStmt();
+                case SHOW: return showStmt();
                 default:
                     return expression();
             }
@@ -117,12 +118,24 @@ namespace Parsing
             Block forBlock = block();
             return new For(start, stop, step, forBlock);
         }
+        // show -> "show" "(" expression ")"
+        private Stmt showStmt()
+        {
+            Console.WriteLine("[INFO: Parser] INSIDE SHOW");
+            advance(); // this was the 'show' keyword
+            consume(LEFT_PAREN, "Expected '(' character after 'show' keyword.");
+            Expr value = expression();
+            consume(RIGHT_PAREN, "Expected ')' character after 'show' value.");
+            return new Show(value);
+        }
+
         // block -> "{" statement_list "}"
         private Block block()
         {
             consume(LEFT_BRACE, "Expected '}' here");
             return new Block(parseBlock());
         }
+
 
         // expression -> comparison ;
         private Expr expression()

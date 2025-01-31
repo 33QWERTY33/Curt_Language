@@ -66,10 +66,7 @@ public class Curt {
 
         Interpreter interpreter = new Interpreter(nodes);
         List<object> results = new List<object>();
-        foreach (Stmt node in nodes)
-        {
-            Console.WriteLine("[INFO: Interpretation Results] " + interpreter.Interpret(nodes[0]));
-        }
+        interpreter.Interpret(nodes);
     }
 
     // ######################

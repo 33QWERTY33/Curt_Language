@@ -20,7 +20,8 @@ namespace Tokenizer
             {"not", NOT },
             {"while", WHILE },
             {"elif", ELIF },
-            {"make", MAKE }};
+            {"make", MAKE },
+            {"show", SHOW }};
         private int start = 0;
         private int current = 0;
         private int line = 1;

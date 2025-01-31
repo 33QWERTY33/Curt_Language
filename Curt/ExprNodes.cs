@@ -149,7 +149,7 @@ namespace nodes
 
         public String(string value, int line)
         {
-            _value = value;
+            _value = value.Substring(1, value.Length - 2);
             this.line = line;
         }
 

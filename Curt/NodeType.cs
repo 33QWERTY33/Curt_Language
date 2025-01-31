@@ -3,7 +3,7 @@
     enum NodeType
     {
         // Statements
-        ASSIGNMENT, IF, WHILE, FOR, BLOCK,
+        ASSIGNMENT, IF, WHILE, FOR, BLOCK, SHOW,
 
         // Expressions
         UNARY, BINARY, LITERAL, GROUPING, IDENTIFIER
