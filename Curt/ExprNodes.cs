@@ -65,17 +65,17 @@ namespace nodes
             {
                 switch (type)
                 {
-                    case PLUS: return (Func<int, int, int>)((p1, p2) => p1 + p2);
-                    case MINUS: return (Func<int, int, int>)((p1, p2) => p1 - p2);
-                    case SLASH: return (Func<int, int, int>)((p1, p2) => p1 / p2);
-                    case STAR: return (Func<int, int, int>)((p1, p2) => p1 * p2);
-                    case PERCENT: return (Func<int, int, int>)((p1, p2) => p1 % p2);
-                    case GREATER: return (Func<int, int, bool>)((p1, p2) => p1 > p2);
-                    case GREATER_EQUAL: return (Func<int, int, bool>)((p1, p2) => p1 >= p2);
-                    case LESS: return (Func<int, int, bool>)((p1, p2) => p1 < p2);
-                    case LESS_EQUAL: return (Func<int, int, bool>)((p1, p2) => p1 <= p2);
-                    case EQUAL_EQUAL: return (Func<int, int, bool>)((p1, p2) => p1 == p2);
-                    case BANG_EQUAL: return (Func<int, int, bool>)((p1, p2) => p1 != p2);
+                    case PLUS: return (Func<float, float, float>)((p1, p2) => p1 + p2);
+                    case MINUS: return (Func<float, float, float>)((p1, p2) => p1 - p2);
+                    case SLASH: return (Func<float, float, float>)((p1, p2) => p1 / p2);
+                    case STAR: return (Func<float, float, float>)((p1, p2) => p1 * p2);
+                    case PERCENT: return (Func<float, float, float>)((p1, p2) => p1 % p2);
+                    case GREATER: return (Func<float, float, bool>)((p1, p2) => p1 > p2);
+                    case GREATER_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 >= p2);
+                    case LESS: return (Func<float, float, bool>)((p1, p2) => p1 < p2);
+                    case LESS_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 <= p2);
+                    case EQUAL_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 == p2);
+                    case BANG_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 != p2);
                     case AND: return (Func<bool, bool, bool>)((p1, p2) => p1 && p2);
                     case OR: return (Func<bool, bool, bool>)((p1, p2) => p1 || p2);
                     default: throw new InvalidOperationException("Unexpected binary operator");
@@ -133,11 +133,11 @@ namespace nodes
     }
     class Number : Literal
     {
-        private int _value;
+        private float _value;
 
         public Number(string value, int line)
         {
-            _value = int.Parse(value);
+            _value = float.Parse(value);
             this.line = line;
         }
 

@@ -42,18 +42,14 @@ public class Curt {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        if (hadSyntaxError)
-        {
-            return;
-        }
+        foreach (Token token in tokens) Console.WriteLine(token);
+
+        if (hadSyntaxError) return;
 
         Parser parser = new Parser(tokens);
         List<Stmt> nodes = parser.parse();
 
-        if (hadParseError)
-        {
-            return;
-        }
+        if (hadParseError) return;
 
         Interpreter interpreter = new Interpreter(nodes);
         List<object> results = new List<object>();
