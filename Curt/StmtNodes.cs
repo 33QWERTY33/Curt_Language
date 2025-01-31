@@ -11,16 +11,16 @@ namespace nodes
     class Assignment : Stmt
     {
         public string identifier;
-        public Expr value;
+        public Stmt value;
         public override NodeType ntype => ASSIGNMENT;
-        public Assignment(string identifier, Expr value)
+        public Assignment(string identifier, Stmt value)
         {
             this.identifier = identifier;
             this.value = value;
         }
         public override void Execute (Interpreter interpreter)
         {
-            Interpreter.globals[identifier] = interpreter.Evaluate(value);
+            Interpreter.globals[identifier] = interpreter.Interpret(value);
         }
     }
     class If : Stmt
@@ -97,7 +97,7 @@ namespace nodes
 
         public override void Execute(Interpreter interpreter)
         {
-            Interpreter.globals[start.identifier] = interpreter.Evaluate(start.value);
+            Interpreter.globals[start.identifier] = interpreter.Interpret(start.value);
             for (object start = Interpreter.globals[this.start.identifier]; (bool)interpreter.Evaluate(stop); Interpreter.globals[this.start.identifier] = interpreter.Evaluate(step))
             {
                 interpreter.Interpret(block);
@@ -118,6 +118,7 @@ namespace nodes
             Console.WriteLine(interpreter.Evaluate(value));
         }
     }
+
     class Block : Stmt
     {
         public List<Stmt> statements;

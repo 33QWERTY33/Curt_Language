@@ -42,8 +42,6 @@ public class Curt {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        foreach (Token token in tokens) Console.WriteLine(token);
-
         if (hadSyntaxError) return;
 
         Parser parser = new Parser(tokens);

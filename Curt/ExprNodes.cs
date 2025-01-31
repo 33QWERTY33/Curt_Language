@@ -2,6 +2,7 @@
 using static Tokenizer.TokType;
 using static nodes.NodeType;
 using nodes;
+using Interpreting;
 
 namespace nodes
 {
@@ -81,10 +82,6 @@ namespace nodes
                     default: throw new InvalidOperationException("Unexpected binary operator");
                 }
             }
-        }
-        public object Execute(object left, object right)
-        {
-            return operation.DynamicInvoke(left, right);
         }
     }
 
@@ -176,5 +173,21 @@ namespace nodes
             this.expression = expression;
             base.line = line;
         }
+    }
+}
+
+class Ask : Expr
+{
+    public Expr value;
+    public override NodeType ntype => NodeType.ASK;
+    public Ask(Expr value)
+    {
+        this.value = value;
+    }
+
+    public string Execute(string prompt)
+    {
+        Console.Write(prompt);
+        return Console.ReadLine();
     }
 }

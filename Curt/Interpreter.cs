@@ -24,36 +24,15 @@ namespace Interpreting
         }
         public object Interpret(Stmt stmt)
         {
-            if (stmt.ntype == ASSIGNMENT)
+            switch (stmt.ntype)
             {
-                Assignment resolvedStmt = (Assignment)stmt;
-                resolvedStmt.Execute(this);
-                return null;
-            }
-            else if (stmt.ntype == IF)
-            {
-                If resolvedStmt = (If)stmt;
-                resolvedStmt.Execute(this);
-                return null;
-            } else if (stmt.ntype == BLOCK)
-            {
-                Block resolvedStmt = (Block)stmt;
-                resolvedStmt.Execute(this);
-                return null;
-            } else if (stmt.ntype == SHOW)
-            {
-                Show resolvedStmt = (Show)stmt;
-                resolvedStmt.Execute(this);
-                return null;
-            } else if (stmt.ntype == WHILE)
-            {
-                While resolvedStmt = (While)stmt;
-                resolvedStmt.Execute(this);
-                return null;
-            }
-            else
-            {
-                return this.Evaluate((Expr)stmt);
+                case (ASSIGNMENT): return Resolver<Assignment>(stmt);
+                case (IF): return Resolver<If>(stmt);
+                case (BLOCK): return Resolver<Block>(stmt);
+                case (FOR): return Resolver<For>(stmt);
+                case (WHILE): return Resolver<While>(stmt);
+                case (SHOW): return Resolver<Show>(stmt);
+                default: return this.Evaluate((Expr)stmt);
             }
         }
         public object Evaluate(Expr expr)
@@ -65,35 +44,42 @@ namespace Interpreting
                 object rightResult = Evaluate(resolvedExpr.right);
 
                 return resolvedExpr.operation.DynamicInvoke(leftResult, rightResult);
-            }
-            else if (expr.ntype == UNARY)
+            } else if (expr.ntype == UNARY)
             {
                 Unary resolvedExpr = (Unary)expr;
                 object rightResult = Evaluate(resolvedExpr.right);
 
                 return resolvedExpr.operation.DynamicInvoke(rightResult);
-            }
-            else if (expr.ntype == GROUPING)
+            } else if (expr.ntype == GROUPING)
             {
                 Grouping resolvedExpr = (Grouping)expr;
 
                 return Evaluate(resolvedExpr.expression);
-            }
-            else if (expr.ntype == LITERAL)
+            } else if (expr.ntype == LITERAL)
             {
                 Literal resolvedExpr = (Literal)expr;
                 return resolvedExpr.value;
-            }
-            else if (expr.ntype == IDENTIFIER) 
+            } else if (expr.ntype == IDENTIFIER)
             {
                 Identifier variable = (Identifier)expr;
                 object result = variable.operation.DynamicInvoke(globals, variable.name);
                 if (result != null) return result;
                 throw new IdentityNotMappedException($"The variable: {variable.name} is not defined");
-            } else
+            } else if (expr.ntype == ASK) {
+                Ask resolvedExpr = (Ask)expr;
+                return resolvedExpr.Execute((string)this.Evaluate(resolvedExpr.value));
+            }
+            else
             {
                 throw new InvalidOperationException("Unsupported expression type");
             }
+        }
+
+        public object Resolver<T>(Stmt stmt) where T : Stmt
+        {
+            T resolvedStmt = (T)stmt;
+            resolvedStmt.Execute(this);
+            return null;
         }
     }
 }

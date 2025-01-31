@@ -21,7 +21,8 @@ namespace Tokenizer
             {"while", WHILE },
             {"elif", ELIF },
             {"make", MAKE },
-            {"show", SHOW }};
+            {"show", SHOW },
+            {"ask", ASK }};
         private int start = 0;
         private int current = 0;
         private int line = 1;

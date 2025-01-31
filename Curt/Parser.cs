@@ -48,7 +48,7 @@ namespace Parsing
                     return expression();
             }
         }
-        // assignment_statement -> "make" IDENTIFIER expression ";"
+        // assignment_statement -> "make" IDENTIFIER state ";"
         private Stmt assignment()
         {
             advance(); // this was the 'make' keyword
@@ -183,6 +183,7 @@ namespace Parsing
             }
             return literal();
         }
+
         // literal -> IDENTIFIER | NUMBER | STRING | BOOLEAN | "(" expression ")" ;
         private Expr literal()
         {
@@ -194,6 +195,7 @@ namespace Parsing
                 case STRING: advance(); return new nodes.String(t.lexeme, t.line);
                 case TRUE: advance(); return new nodes.Boolean(t.lexeme, t.line);
                 case FALSE: advance(); return new nodes.Boolean(t.lexeme, t.line);
+                case ASK: return ask();
                 default:
                     if (check(LEFT_PAREN))
                     {
@@ -206,6 +208,16 @@ namespace Parsing
                     advance(); // Skip the unexpected token to avoid infinite loop
                     return null; // [WIP] Handle this error more robustly in the future
             }
+        }
+
+        // ask -> "ask" "(" """ STRING """ ")"
+        private Expr ask()
+        {
+            advance(); // this was the 'ask' keyword
+            consume(LEFT_PAREN, "Expected '(' character after 'ask' keyword.");
+            Expr value = literal(); // input prompt
+            consume(RIGHT_PAREN, "Expected ')' character after 'ask' value.");
+            return new Ask(value);
         }
 
         // ###################
