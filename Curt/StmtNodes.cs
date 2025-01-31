@@ -64,10 +64,19 @@ namespace nodes
     {
         private Comparison condition;
         private Block block;
+        public override NodeType ntype => WHILE;
         public While(Comparison condition, Block block)
         {
             this.condition = condition;
             this.block = block;
+        }
+
+        public override void Execute(Interpreter interpreter)
+        {
+            while ((bool)interpreter.Evaluate(condition))
+            {
+                interpreter.Interpret(block);
+            }
         }
     }
     class For : Stmt
@@ -76,6 +85,7 @@ namespace nodes
         private Comparison stop;
         private Step step;
         private Block block;
+        public override NodeType ntype => FOR;
 
         public For(Assignment start, Comparison stop, Step step, Block block)
         {
@@ -83,6 +93,15 @@ namespace nodes
             this.stop = stop;
             this.step = step;
             this.block = block;
+        }
+
+        public override void Execute(Interpreter interpreter)
+        {
+            Interpreter.globals[start.identifier] = interpreter.Evaluate(start.value);
+            for (object start = Interpreter.globals[this.start.identifier]; (bool)interpreter.Evaluate(stop); Interpreter.globals[this.start.identifier] = interpreter.Evaluate(step))
+            {
+                interpreter.Interpret(block);
+            }
         }
     }
     class Show : Stmt

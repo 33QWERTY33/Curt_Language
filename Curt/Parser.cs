@@ -60,7 +60,6 @@ namespace Parsing
         // if_statement -> "if" "(" expression ")" block("elif" "(" expression ")" block)* ("else" block)?
         private Stmt ifStmt()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE IF");
             advance(); // this was the 'if' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'if' keyword.");
             Comparison ifCondition = (Comparison)expression();
@@ -72,7 +71,6 @@ namespace Parsing
 
             while (peek().type == ELIF)
             {
-                Console.WriteLine("[INFO: Parser] INSIDE ELIF");
                 advance(); // this was the 'elif' keyword
                 consume(LEFT_PAREN, "Expected '(' character after 'elif' keyword.");
                 elifConditions.Append((Comparison)expression());
@@ -84,7 +82,6 @@ namespace Parsing
 
             if (peek().type == ELSE)
             {
-                Console.WriteLine("[INFO: Parser] INSIDE ELSE");
                 advance(); // this was the 'else' keyword
                 elseBlock = block();
             }
@@ -95,7 +92,6 @@ namespace Parsing
         // while_statement -> "while" "(" expression ")" block
         private Stmt whileStmt()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE WHILE");
             advance(); // this was the 'while' keyword
             consume(LEFT_PAREN, "Expected ')' character after 'while' keyword.");
             Comparison whileCondition = (Comparison)expression();
@@ -106,7 +102,6 @@ namespace Parsing
         // for_statement -> "for" "(" assignment_statement ";" expression ";" expression ")" block
         private Stmt forStmt()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE FOR");
             advance(); // this was the 'for' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'for' keyword.");
             Assignment start = (Assignment)assignment();
@@ -121,7 +116,6 @@ namespace Parsing
         // show -> "show" "(" expression ")"
         private Stmt showStmt()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE SHOW");
             advance(); // this was the 'show' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'show' keyword.");
             Expr value = expression();
@@ -146,7 +140,6 @@ namespace Parsing
         // comparison -> arithmetic((">" | ">=" | "<" | "<=" | "!=" | "==" | "and" | "or") arithmetic )* ;
         private Expr comparison()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE COMPARISON");
             Expr expr = arithmetic();
             while (check(GREATER) || check(GREATER_EQUAL) || check(LESS) || check(LESS_EQUAL) ||
                    check(BANG_EQUAL) || check(EQUAL_EQUAL) || check(AND) || check(OR))
@@ -161,7 +154,6 @@ namespace Parsing
         // arithmetic -> unary(("+" | "-" | "*" | "/" | "%") unary )* ;
         private Expr arithmetic()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE ARITHMETIC");
             Expr expr = unary();
             while (check(PLUS) || check(MINUS) || check(STAR) || check(SLASH) || check(PERCENT))
             {
@@ -175,7 +167,6 @@ namespace Parsing
         // unary -> ("not" | "-" | "++" | "--") unary | literal
         private Expr unary()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE UNARY");
             TokType t = peek().type;
             if (t == INCREMENT || t == DECREMENT || t == NOT || t == MINUS)
             {
@@ -195,7 +186,6 @@ namespace Parsing
         // literal -> IDENTIFIER | NUMBER | STRING | BOOLEAN | "(" expression ")" ;
         private Expr literal()
         {
-            Console.WriteLine("[INFO: Parser] INSIDE LITERAL");
             Token t = peek();
             switch (t.type)
             {
@@ -262,7 +252,6 @@ namespace Parsing
         private Token advance()
         {
             if (!isAtEnd()) currentToken++;
-            Console.WriteLine("[INFO: Parser] ADVANCED OVER " + tokens[currentToken - 1] + " NOW ON " + tokens[currentToken]);
             return previous();
         }
 

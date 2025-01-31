@@ -46,18 +46,9 @@ public class Curt {
         {
             return;
         }
-        foreach (Token token in tokens)
-        {
-            Console.WriteLine("[INFO: Tokenizer] " + token);
-        }
 
         Parser parser = new Parser(tokens);
         List<Stmt> nodes = parser.parse();
-
-        foreach (Stmt node in nodes)
-        {
-            Console.WriteLine("[INFO: AST Root] " + node);
-        }
 
         if (hadParseError)
         {

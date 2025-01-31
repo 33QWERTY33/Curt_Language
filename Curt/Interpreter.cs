@@ -45,6 +45,11 @@ namespace Interpreting
                 Show resolvedStmt = (Show)stmt;
                 resolvedStmt.Execute(this);
                 return null;
+            } else if (stmt.ntype == WHILE)
+            {
+                While resolvedStmt = (While)stmt;
+                resolvedStmt.Execute(this);
+                return null;
             }
             else
             {
