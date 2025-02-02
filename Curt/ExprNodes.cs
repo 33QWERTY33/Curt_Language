@@ -23,9 +23,9 @@ namespace nodes
                 switch (type)
                 {
                     case (NOT): return (Func<bool, bool>)(p1 => !p1);
-                    case (MINUS): return (Func<int, int>)(p1 => -p1);
-                    case (INCREMENT): return (Func<int, int>)(p1 => ++p1);
-                    case (DECREMENT): return (Func<int, int>)(p1 => --p1);
+                    case (MINUS): return (Func<float, float>)(p1 => -p1);
+                    case (INCREMENT): return (Func<float, float>)(p1 => ++p1);
+                    case (DECREMENT): return (Func<float, float>)(p1 => --p1);
                     default: throw new InvalidOperationException("Unexpected unary operator");
                 }
             }
