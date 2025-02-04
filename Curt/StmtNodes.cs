@@ -35,8 +35,8 @@ namespace nodes
         {
             this.ifCondition = ifCondition;
             this.ifBlock = ifBlock;
-            this.elifConditions = elifConditions ?? new List<Comparison>();
-            this.elifBlocks = elifBlocks ?? new List<Block>();
+            this.elifConditions = elifConditions;
+            this.elifBlocks = elifBlocks;
             this.elseBlock = elseBlock ?? null;
         }
         public override void Execute(Interpreter interpreter)
@@ -50,6 +50,7 @@ namespace nodes
             {
                 if ((bool)interpreter.Evaluate(condition))
                 {
+
                     interpreter.Interpret(elifBlocks[elifConditions.IndexOf(condition)]);
                     return;
                 }

@@ -73,9 +73,9 @@ namespace Parsing
             {
                 advance(); // this was the 'elif' keyword
                 consume(LEFT_PAREN, "Expected '(' character after 'elif' keyword.");
-                elifConditions.Append((Comparison)expression());
+                elifConditions.Add((Comparison)expression());
                 consume(RIGHT_PAREN, "Expected ')' character after 'elif' condition.");
-                elifBlocks.Append(block());
+                elifBlocks.Add(block());
             }
 
             Block elseBlock = null;
