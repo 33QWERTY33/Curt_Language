@@ -75,7 +75,7 @@ namespace nodes
                     case LESS: return (Func<float, float, bool>)((p1, p2) => p1 < p2);
                     case LESS_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 <= p2);
                     case EQUAL_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : p1.Equals(p2));
-                    case BANG_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : !p1.Equals(p2));
+                    case BANG_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strNotEquals((string)p1, (string)p2) : !p1.Equals(p2));
                     case AND: return (Func<bool, bool, bool>)((p1, p2) => p1 && p2);
                     case OR: return (Func<bool, bool, bool>)((p1, p2) => p1 || p2);
                     default: throw new InvalidOperationException("Unexpected binary operator");
