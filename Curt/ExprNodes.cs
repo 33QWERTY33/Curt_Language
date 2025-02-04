@@ -75,8 +75,8 @@ namespace nodes
                     case GREATER_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 >= p2);
                     case LESS: return (Func<float, float, bool>)((p1, p2) => p1 < p2);
                     case LESS_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 <= p2);
-                    case EQUAL_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : (float)p1 == (float)p2);
-                    case BANG_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : (float)p1 != (float)p2);
+                    case EQUAL_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : p1.Equals(p2));
+                    case BANG_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : !p1.Equals(p2));
                     case AND: return (Func<bool, bool, bool>)((p1, p2) => p1 && p2);
                     case OR: return (Func<bool, bool, bool>)((p1, p2) => p1 || p2);
                     default: throw new InvalidOperationException("Unexpected binary operator");
@@ -93,7 +93,7 @@ namespace nodes
         }
         private bool strNotEquals(string s1, string s2)
         {
-            return s1 != s2;
+            return !strEquals(s1, s2);
         }
     }
 
@@ -212,9 +212,9 @@ class Randint : Expr
         this.value = value;
     }
 
-    public int Execute(object range)
+    public float Execute(object range)
     {
         Random random = new Random();
-        return random.Next(Convert.ToInt32(range));
+        return (float)random.Next(Convert.ToInt32(range));
     }
 }

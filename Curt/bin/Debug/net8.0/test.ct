@@ -1,7 +1,6 @@
 ﻿make num = randint(10)
 make guess = "11"
 
-
 if (num == 0) {make num = "0"}
 elif (num == 1) {make num = "1"}
 elif (num == 2) {make num = "2"}

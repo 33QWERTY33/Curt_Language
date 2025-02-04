@@ -43,6 +43,12 @@ namespace Interpreting
                 object leftResult = Evaluate(resolvedExpr.left);
                 object rightResult = Evaluate(resolvedExpr.right);
 
+                Console.WriteLine("LEFT RESULT TYPE >>> " + leftResult.GetType());
+                Console.WriteLine("RIGHT RESULT TYPE >>> " + rightResult.GetType());
+                Console.WriteLine("LEFT RESULT VALUE >>> " + leftResult);
+                Console.WriteLine("RIGHT RESULT VALUE >>> " + rightResult);
+                Console.WriteLine("COMPARISON RESULT >>> " + (leftResult == rightResult));
+
                 return resolvedExpr.operation.DynamicInvoke(leftResult, rightResult);
             } else if (expr.ntype == UNARY)
             {

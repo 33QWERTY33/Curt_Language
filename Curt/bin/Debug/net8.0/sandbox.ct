@@ -1,0 +1,4 @@
+﻿make num = randint(10)
+make guess = "11"
+
+if (num == 0) {show("hello")}
