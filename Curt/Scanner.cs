@@ -1,7 +1,4 @@
 ﻿using static Tokenizer.TokType;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
 
 namespace Tokenizer
 {
