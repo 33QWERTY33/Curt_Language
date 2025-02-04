@@ -1,6 +1,7 @@
 ﻿using static Tokenizer.TokType;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text;
 
 namespace Tokenizer
 {
@@ -59,6 +60,7 @@ namespace Tokenizer
                 case ';': addToken(SEMICOLON); break;
                 case '*': addToken(STAR); break;
                 case '%': addToken(PERCENT); break;
+                case '\n': line++; break;
                 case '-':
                     addToken(match('-') ? DECREMENT : MINUS);
                     break;
@@ -95,7 +97,7 @@ namespace Tokenizer
                         consume_number();
                     } else if (char.IsLetter(c)) {
                         consume_identifier();
-                    } else { Curt.error(line, "Unexpected character."); }
+                    } else { Curt.error(line, "Unexpected character. CHAR: " + c + "| UTF8: " + Convert.ToInt32(c)); }
                     break;
             }
         }

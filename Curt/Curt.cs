@@ -4,16 +4,17 @@ using Tokenizer;
 using Parsing;
 using nodes;
 using Interpreting;
+using System.Text;
 
 public class Curt {
     public static bool hadSyntaxError;
     public static bool hadParseError;
     public static bool hadRuntimeError;
     public static void Main(string[] args) {
-        if (args.Length > 2) {
+        if (args.Length > 1) {
            Console.Error.WriteLine("[ERROR] Invalid number of arguments provided");
-        } else if (args.Length == 2) { // for file
-            runFile(args[1]);
+        } else if (args.Length == 1) { // for file
+            runFile(args[0]);
         } else { // for REPL
             runPrompt();
         }
@@ -33,7 +34,8 @@ public class Curt {
         if (!File.Exists(filePath)) {
             Console.Error.WriteLine("[ERROR] The file does not exist...");
         } else {
-            string sourceCode = File.ReadAllText(filePath);
+            string sourceCode = File.ReadAllText(filePath, Encoding.UTF8);
+            sourceCode = sourceCode.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\t", "");
             run(sourceCode);
         }
     }
