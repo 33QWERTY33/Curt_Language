@@ -73,7 +73,7 @@ public class Curt {
 }
 
 /*
-    Credits for the Scanner and Token classes go to Robert Nystrom as outlined in his book Crafting Interpreters.
+    Credits for the Scanner and Token class go to Robert Nystrom as outlined in his book Crafting Interpreters.
     Those are not my ideas, but it seemed like very efficient logic and doing it another way would just be damaging performance just to save face.
     All of the other specific implementation details are my idea (for better or worse), such as stuffing functionality into the syntax tree nodes.
  */

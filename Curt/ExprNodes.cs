@@ -2,6 +2,7 @@
 using static Tokenizer.TokType;
 using static nodes.NodeType;
 using nodes;
+using Interpreting;
 
 namespace nodes
 {
@@ -9,6 +10,53 @@ namespace nodes
     {
         public virtual Delegate operation { get; }
     }
+
+    class Call : Expr
+    {
+        protected int line;
+        protected string funcName;
+        private List<Expr> args;
+
+        public override NodeType ntype => NodeType.CALL;
+        public Call(int line, string funcName, List<Expr> args)
+        {
+            this.line = line;
+            this.funcName = funcName;
+            this.args = args ?? new List<Expr>();
+        }
+
+        public object Execute(Interpreter interpreter)
+        {
+            Function functionDef;
+            Dictionary<string, object> globalCopy;
+
+            Interpreter.globals.TryGetValue(funcName, out object result);
+
+            if (result != null) { functionDef = (Function)Interpreter.globals[funcName]; }
+            else { Curt.error(line, $"Undefined function call for {funcName} attempted."); return null; }
+
+            List<string> parameters = functionDef.parameters;
+
+            if (args.Count == parameters.Count)
+            {
+                Dictionary<string, object> locals = Interpreter.globals.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value
+                    );
+                globalCopy = Interpreter.globals;
+                Interpreter.globals = locals;
+                for (int i = 0; i < args.Count; i++)
+                {
+                    Interpreter.globals[parameters[i]] = interpreter.Interpret(args[i]);
+                }
+            } else { Curt.error(line, $"parameter count and argument count mismatched. Check the function signature."); return null; }
+
+            interpreter.Interpret(functionDef.funcBlock);
+            Interpreter.globals = globalCopy;
+            return null;
+        }
+    }
+
     class Unary : Expr
     {
         protected TokType type;
@@ -206,7 +254,7 @@ class Randint : Expr
 {
     public Expr value;
     public override NodeType ntype => NodeType.RANDINT;
-    public Randint(Expr value) 
+    public Randint(Expr value)
     {
         this.value = value;
     }

@@ -9,7 +9,7 @@
         // Literals
         IDENTIFIER, STRING, NUMBER,
         // Keywords
-        AND, ELSE, FALSE, FOR, IF, ELIF, ZILCH, OR, NOT, TRUE, MAKE, WHILE, SHOW, ASK, RANDINT,
+        AND, ELSE, FALSE, FOR, IF, ELIF, ZILCH, OR, NOT, TRUE, MAKE, FUNC, CALL, WHILE, SHOW, ASK, RANDINT,
         EOF
     }
 

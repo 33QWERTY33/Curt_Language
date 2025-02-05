@@ -21,7 +21,9 @@ namespace Tokenizer
             {"make", MAKE },
             {"show", SHOW },
             {"ask", ASK },
-            {"randint", RANDINT }};
+            {"randint", RANDINT },
+            {"func", FUNC },
+            {"call", CALL }};
         private int start = 0;
         private int current = 0;
         private int line = 1;

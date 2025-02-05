@@ -13,6 +13,9 @@ statement ->
     | for_statement
     | block
 
+funcdef_statement -> 
+    "func" IDENTIFIER "(" (IDENTIFIER)* ")" block
+
 assignment_statement -> 
     "make" IDENTIFIER expression ";"
 
@@ -34,7 +37,7 @@ block ->
 //######################################################
 // expression tree
 //######################################################
-expression -> comparison ;
+expression -> call ;
 
 comparison ->
     arithmetic ( (">" | ">=" | "<" | "<=" | "!=" | "==" | "and" | "or") arithmetic )* ;
@@ -48,9 +51,17 @@ unary ->
 ask ->
     "ask" "(" """ STRING """ ")"
 
+primary -> 
+    call
+    | literal
+    | "(" (expression)* ")" ;
+
+call ->
+    "call" IDENTIFIER "(" (expression ("," expression)*)? ")" 
+
 literal ->
     IDENTIFIER
     | NUMBER
     | STRING
-    | BOOLEAN
-    | "(" expression ")" ;
+    | BOOLEAN ;
+    

@@ -39,17 +39,39 @@ namespace Parsing
             Token token = peek();
             switch (token.type)
             {
-                case MAKE: return assignment();
+                case MAKE: return assignmentStmt();
                 case IF: return ifStmt();
                 case WHILE: return whileStmt();
                 case FOR: return forStmt();
                 case SHOW: return showStmt();
+                case FUNC: return funcDefStmt();
                 default:
                     return expression();
             }
         }
+
+        // funcdef_statement -> "func" IDENTIFIER "(" (IDENTIFIER)* ")" block
+        private Stmt funcDefStmt()
+        {
+            List<string> parameters = new List<string>();
+
+            advance(); // this was the 'func' keyword
+            Token identifier = consume(IDENTIFIER, "Expected identifier after 'func' keyword.");
+            consume(LEFT_PAREN, "Expected '(' after identifier.");
+            while (!match(RIGHT_PAREN))
+            {
+                Token paramName = consume(IDENTIFIER, "invalid parameter name found.");
+                parameters.Add(paramName.lexeme);
+                if (peek().type != RIGHT_PAREN) { consume(COMMA, "parameters should be seperated by commas."); }
+            }
+
+            Block funcBlock = block();
+
+            return new Function(identifier.lexeme, parameters, funcBlock);
+        }
+
         // assignment_statement -> "make" IDENTIFIER state ";"
-        private Stmt assignment()
+        private Stmt assignmentStmt()
         {
             advance(); // this was the 'make' keyword
             Token identifier = consume(IDENTIFIER, "Expected identifier after 'make' keyword.");
@@ -104,7 +126,7 @@ namespace Parsing
         {
             advance(); // this was the 'for' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'for' keyword.");
-            Assignment start = (Assignment)assignment();
+            Assignment start = (Assignment)assignmentStmt();
             consume(SEMICOLON, "Expected ';' after 'start' portion of for loop");
             Comparison stop = (Comparison)expression();
             consume(SEMICOLON, "Expected ';' after 'stop' portion of for loop");
@@ -126,7 +148,7 @@ namespace Parsing
         // block -> "{" statement_list "}"
         private Block block()
         {
-            consume(LEFT_BRACE, "Expected '}' here");
+            consume(LEFT_BRACE, "Expected '{' here");
             return new Block(parseBlock());
         }
 
@@ -181,7 +203,37 @@ namespace Parsing
                     return new Negation(op.line, op.type, right);
                 }
             }
-            return literal();
+            return primary();
+        }
+
+        // primary ->  call | literal | "(" (expression)* ")" ;
+        private Expr primary()
+        {
+            if (peek().type == CALL)
+            {
+                return call();
+            } else
+            {
+                return literal();
+            }
+        }
+
+        // call -> "call" IDENTIFIER "(" (expression ("," expression)*)? ")" 
+        private Expr call()
+        {
+            advance(); // this was the 'call' keyword
+            List<Expr> args = new List<Expr>();
+
+            Token funcTok = consume(IDENTIFIER, "Expected function identifier for call expression");
+            string funcName = funcTok.lexeme;
+            consume(LEFT_PAREN, "Expected '(' after function identifier for call expression");
+            while(!match(RIGHT_PAREN))
+            {
+                args.Add(expression());
+                if (peek().type != RIGHT_PAREN) { consume(COMMA, "arguments should be seperated by commas."); }
+            }
+
+            return new Call(funcTok.line, funcName, args);
         }
 
         // literal -> IDENTIFIER | NUMBER | STRING | BOOLEAN | "(" expression ")" ;
@@ -216,7 +268,7 @@ namespace Parsing
         {
             advance(); // this was the 'randint' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'randint' keyword.");
-            Expr value = literal(); // random range
+            Expr value = primary(); // random range
             consume(RIGHT_PAREN, "Expected ')' character after 'randint' value.");
             return new Randint(value);
         }
@@ -226,7 +278,7 @@ namespace Parsing
         {
             advance(); // this was the 'ask' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'ask' keyword.");
-            Expr value = literal(); // input prompt
+            Expr value = primary(); // input prompt
             consume(RIGHT_PAREN, "Expected ')' character after 'ask' value.");
             return new Ask(value);
         }

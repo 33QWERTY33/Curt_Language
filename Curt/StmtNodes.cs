@@ -8,15 +8,36 @@ namespace nodes
         public virtual NodeType ntype { get; }
         public virtual void Execute(Interpreter interpreter) { }
     }
+    class Function : Stmt
+    {
+        public string identifier;
+        public List<string> parameters;
+        public Block funcBlock;
+        public override NodeType ntype => FUNCTION;
+        public Function(string identifier, List<string> parameters, Block funcBlock)
+        {
+            this.identifier = identifier;
+            this.parameters = parameters ?? new List<string>();
+            this.funcBlock = funcBlock;
+        }
+        public override void Execute(Interpreter interpreter)
+        {
+            Interpreter.globals[identifier] = this;
+        }
+    }
     class Assignment : Stmt
     {
         public string identifier;
-        public Stmt value;
+        public Expr value = null;
         public override NodeType ntype => ASSIGNMENT;
-        public Assignment(string identifier, Stmt value)
+        public Assignment(string identifier, Expr value)
         {
             this.identifier = identifier;
             this.value = value;
+        }
+        public Assignment(string identifier)
+        {
+            this.identifier = identifier;
         }
         public override void Execute (Interpreter interpreter)
         {

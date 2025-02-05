@@ -31,6 +31,7 @@ namespace Interpreting
                 case (FOR): return Resolver<For>(stmt);
                 case (WHILE): return Resolver<While>(stmt);
                 case (SHOW): return Resolver<Show>(stmt);
+                case (FUNCTION): return Resolver<Function>(stmt);
                 default: return this.Evaluate((Expr)stmt);
             }
         }
@@ -71,7 +72,12 @@ namespace Interpreting
             {
                 Randint resolvedExpr = (Randint)expr;
                 return resolvedExpr.Execute(Evaluate(resolvedExpr.value));
-            } else
+            } else if (expr.ntype == CALL)
+            {
+                Call resolvedExpr = (Call)expr;
+                return resolvedExpr.Execute(this);
+            }
+            else
             {
                 throw new InvalidOperationException("Unsupported expression type");
             }
