@@ -19,9 +19,6 @@ namespace Tokenizer
             {"while", WHILE },
             {"elif", ELIF },
             {"make", MAKE },
-            {"show", SHOW },
-            {"ask", ASK },
-            {"randint", RANDINT },
             {"func", FUNC },
             {"call", CALL },
             {"return", RETURN }};

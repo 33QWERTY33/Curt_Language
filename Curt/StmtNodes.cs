@@ -8,13 +8,15 @@ namespace nodes
         public virtual NodeType ntype { get; }
         public virtual void Execute(Interpreter interpreter) { }
     }
+
     class Function : Stmt
     {
         public string identifier;
         public List<string> parameters;
-        public Block funcBlock;
+        public Block? funcBlock;
+        public virtual bool native { get; } = false;
         public override NodeType ntype => FUNCTION;
-        public Function(string identifier, List<string> parameters, Block funcBlock)
+        public Function(string identifier, List<string> parameters, Block? funcBlock)
         {
             this.identifier = identifier;
             this.parameters = parameters ?? new List<string>();
@@ -23,6 +25,18 @@ namespace nodes
         public override void Execute(Interpreter interpreter)
         {
             Interpreter.globals[identifier] = this;
+        }
+    }
+    class Native : Function
+    {
+        new string identifier;
+        new List<string> parameters;
+        public override bool native { get; } = true;
+        public Delegate func;
+
+        public Native(string identifier, List<string> parameters, Delegate func) : base(identifier, parameters, null)
+        {
+            this.func = func;
         }
     }
 
@@ -158,20 +172,6 @@ namespace nodes
             {
                 interpreter.Interpret(block);
             }
-        }
-    }
-    class Show : Stmt
-    {
-        private Expr value;
-        public override NodeType ntype => SHOW;
-        public Show(Expr value)
-        {
-            this.value = value;
-        }
-
-        public override void Execute(Interpreter interpreter)
-        {
-            Console.WriteLine(interpreter.Evaluate(value));
         }
     }
 

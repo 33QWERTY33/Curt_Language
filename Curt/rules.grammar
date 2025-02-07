@@ -28,9 +28,6 @@ while_statement ->
 for_statement -> 
     "for" "(" assignment_statement ";" expression ";" expression ")" block
 
-show -> 
-    "show" "(" expression ")"
-
 block -> 
     "{" statement_list "}"
 
@@ -47,9 +44,6 @@ arithmetic ->
 
 unary ->
     ("not" | "-" | "++" | "--")* literal
-
-ask ->
-    "ask" "(" """ STRING """ ")"
 
 primary -> 
     call

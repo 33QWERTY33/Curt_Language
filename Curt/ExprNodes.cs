@@ -3,6 +3,7 @@ using static Tokenizer.TokType;
 using static nodes.NodeType;
 using nodes;
 using Interpreting;
+using System.Reflection;
 
 namespace nodes
 {
@@ -25,36 +26,59 @@ namespace nodes
             this.args = args ?? new List<Expr>();
         }
 
-        public object Execute(Interpreter interpreter)
+        public object? Execute(Interpreter interpreter)
         {
-            Function functionDef;
+            if (Interpreter.globals.TryGetValue(funcName, out object result) != false)
+            {
+                Function functionDef = (Function)Interpreter.globals[funcName];
+
+                if (args.Count == functionDef.parameters.Count)
+                {
+                    if (functionDef.native) return NativeFuncExec(interpreter, (Native)functionDef); 
+                    else { return UserFuncExec(interpreter, functionDef); }
+                }
+                else { Curt.error(line, $"parameter count and argument count mismatched. Check the function signature."); return null; }
+            }
+            else { Curt.error(line, $"Undefined function call for {funcName} attempted."); return null; }
+        }
+
+        public object? NativeFuncExec(Interpreter interpreter, Native native)
+        {
+            int numParams = native.func.GetMethodInfo().GetParameters().Length;
+
+            switch (numParams)
+            {
+                case 0: return native.func.DynamicInvoke();
+                case 1: return native.func.DynamicInvoke(interpreter.Interpret(args[0]));
+                case 2: return native.func.DynamicInvoke(interpreter.Interpret(args[0]), interpreter.Interpret(args[1]));
+                case 3: return native.func.DynamicInvoke(interpreter.Interpret(args[0]), interpreter.Interpret(args[1]), interpreter.Interpret(args[2]));
+                default:
+                    Curt.error(line, "Unsupported number of params in built-in function detected.");
+                    return null;
+            }
+        }
+
+        public object? UserFuncExec(Interpreter interpreter, Function functionDef)
+        {
             Dictionary<string, object> globalCopy;
 
-            Interpreter.globals.TryGetValue(funcName, out object result);
+            Dictionary<string, object> locals = Interpreter.globals.ToDictionary(
+                        entry => entry.Key,
+                        entry => entry.Value
+                        );
+            globalCopy = Interpreter.globals;
+            Interpreter.globals = locals;
 
-            if (result != null) { functionDef = (Function)Interpreter.globals[funcName]; }
-            else { Curt.error(line, $"Undefined function call for {funcName} attempted."); return null; }
-
-            List<string> parameters = functionDef.parameters;
-
-            if (args.Count == parameters.Count)
+            for (int i = 0; i < args.Count; i++)
             {
-                Dictionary<string, object> locals = Interpreter.globals.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value
-                    );
-                globalCopy = Interpreter.globals;
-                Interpreter.globals = locals;
-                for (int i = 0; i < args.Count; i++)
-                {
-                    Interpreter.globals[parameters[i]] = interpreter.Interpret(args[i]);
-                }
-            } else { Curt.error(line, $"parameter count and argument count mismatched. Check the function signature."); return null; }
+                Interpreter.globals[functionDef.parameters[i]] = interpreter.Interpret(args[i]);
+            }
 
             try
             {
                 interpreter.Interpret(functionDef.funcBlock);
-            } catch (ValuePackage delivery)
+            }
+            catch (ValuePackage delivery)
             {
                 Interpreter.globals = globalCopy;
                 return delivery.value;
@@ -239,36 +263,5 @@ namespace nodes
             this.expression = expression;
             base.line = line;
         }
-    }
-}
-
-class Ask : Expr
-{
-    public Expr value;
-    public override NodeType ntype => NodeType.ASK;
-    public Ask(Expr value)
-    {
-        this.value = value;
-    }
-
-    public string Execute(string prompt)
-    {
-        Console.Write(prompt);
-        return Console.ReadLine();
-    }
-}
-class Randint : Expr
-{
-    public Expr value;
-    public override NodeType ntype => NodeType.RANDINT;
-    public Randint(Expr value)
-    {
-        this.value = value;
-    }
-
-    public float Execute(object range)
-    {
-        Random random = new Random();
-        return (float)random.Next(Convert.ToInt32(range));
     }
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Curt")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b655b7f67d78ff9aeb2e3a717f242e6a5806e513")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1afd940c39165d165bb8a32cf9fbac4e081feda2")]
 [assembly: System.Reflection.AssemblyProductAttribute("Curt")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Curt")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,13 +1,17 @@
 ﻿using nodes;
 using System.Security.Principal;
 using static nodes.NodeType;
+using StdLib;
 
 namespace Interpreting
 {
     class Interpreter
     {
         List<Stmt> statements;
-        public static Dictionary<string, object> globals = new Dictionary<string, object> { };
+        public static Dictionary<string, object> globals = new Dictionary<string, object> {
+            {"show",  new Native("show", new List<string> {"msg"}, Lib.show)},
+            {"ask",  new Native("ask", new List<string> {"msg"}, Lib.ask)},
+        };
         public Interpreter(List<Stmt> statements)
         {
             this.statements = statements;
@@ -30,7 +34,6 @@ namespace Interpreting
                 case (BLOCK): return Resolver<Block>(stmt);
                 case (FOR): return Resolver<For>(stmt);
                 case (WHILE): return Resolver<While>(stmt);
-                case (SHOW): return Resolver<Show>(stmt);
                 case (FUNCTION): return Resolver<Function>(stmt);
                 case (RETURN): return Resolver<Return>(stmt);
                 default: return this.Evaluate((Expr)stmt);
@@ -67,13 +70,6 @@ namespace Interpreting
                 if (result != null) return result;
                 Curt.error(variable.line, $"The identifier \"{variable.name}\" is not defined");
                 return null;
-            } else if (expr.ntype == ASK) {
-                Ask resolvedExpr = (Ask)expr;
-                return resolvedExpr.Execute((string)Evaluate(resolvedExpr.value));
-            } else if (expr.ntype == RANDINT)
-            {
-                Randint resolvedExpr = (Randint)expr;
-                return resolvedExpr.Execute(Evaluate(resolvedExpr.value));
             } else if (expr.ntype == CALL)
             {
                 Call resolvedExpr = (Call)expr;

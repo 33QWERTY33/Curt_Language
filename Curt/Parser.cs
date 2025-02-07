@@ -43,7 +43,6 @@ namespace Parsing
                 case IF: return ifStmt();
                 case WHILE: return whileStmt();
                 case FOR: return forStmt();
-                case SHOW: return showStmt();
                 case FUNC: return funcDefStmt();
                 case RETURN: return returnStmt();
                 default:
@@ -143,15 +142,6 @@ namespace Parsing
             consume(RIGHT_PAREN, "Expected ')' character after 'for' condition.");
             Block forBlock = block();
             return new For(start, stop, step, forBlock);
-        }
-        // show -> "show" "(" expression ")"
-        private Stmt showStmt()
-        {
-            advance(); // this was the 'show' keyword
-            consume(LEFT_PAREN, "Expected '(' character after 'show' keyword.");
-            Expr value = expression();
-            consume(RIGHT_PAREN, "Expected ')' character after 'show' value.");
-            return new Show(value);
         }
 
         // block -> "{" statement_list "}"
@@ -256,8 +246,6 @@ namespace Parsing
                 case STRING: advance(); return new nodes.String(t.lexeme, t.line);
                 case TRUE: advance(); return new nodes.Boolean(t.lexeme, t.line);
                 case FALSE: advance(); return new nodes.Boolean(t.lexeme, t.line);
-                case ASK: return ask();
-                case RANDINT: return randint();
                 default:
                     if (check(LEFT_PAREN))
                     {
@@ -270,26 +258,6 @@ namespace Parsing
                     advance(); // Skip the unexpected token to avoid infinite loop
                     return null; // [WIP] Handle this error more robustly in the future
             }
-        }
-
-        // ask -> "ask" "(" """ NUMBER """ ")"
-        private Expr randint()
-        {
-            advance(); // this was the 'randint' keyword
-            consume(LEFT_PAREN, "Expected '(' character after 'randint' keyword.");
-            Expr value = primary(); // random range
-            consume(RIGHT_PAREN, "Expected ')' character after 'randint' value.");
-            return new Randint(value);
-        }
-
-        // randint -> "randint" "(" INT ")"
-        private Expr ask()
-        {
-            advance(); // this was the 'ask' keyword
-            consume(LEFT_PAREN, "Expected '(' character after 'ask' keyword.");
-            Expr value = primary(); // input prompt
-            consume(RIGHT_PAREN, "Expected ')' character after 'ask' value.");
-            return new Ask(value);
         }
 
         // ###################
