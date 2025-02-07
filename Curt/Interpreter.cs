@@ -13,7 +13,7 @@ namespace Interpreting
             this.statements = statements;
         }
 
-        public object Interpret(List<Stmt> stmts)
+        public object? Interpret(List<Stmt> stmts)
         {
             foreach (Stmt stmt in stmts)
             {
@@ -21,7 +21,7 @@ namespace Interpreting
             }
             return null;
         }
-        public object Interpret(Stmt stmt)
+        public object? Interpret(Stmt stmt)
         {
             switch (stmt.ntype)
             {
@@ -32,10 +32,11 @@ namespace Interpreting
                 case (WHILE): return Resolver<While>(stmt);
                 case (SHOW): return Resolver<Show>(stmt);
                 case (FUNCTION): return Resolver<Function>(stmt);
+                case (RETURN): return Resolver<Return>(stmt);
                 default: return this.Evaluate((Expr)stmt);
             }
         }
-        public object Evaluate(Expr expr)
+        public object? Evaluate(Expr expr)
         {
             if (expr.ntype == BINARY)
             {
@@ -64,7 +65,8 @@ namespace Interpreting
                 Identifier variable = (Identifier)expr;
                 object result = variable.operation.DynamicInvoke(globals, variable.name);
                 if (result != null) return result;
-                throw new IdentityNotMappedException($"The variable: {variable.name} is not defined");
+                Curt.error(variable.line, $"The identifier \"{variable.name}\" is not defined");
+                return null;
             } else if (expr.ntype == ASK) {
                 Ask resolvedExpr = (Ask)expr;
                 return resolvedExpr.Execute((string)Evaluate(resolvedExpr.value));
@@ -83,7 +85,7 @@ namespace Interpreting
             }
         }
 
-        public object Resolver<T>(Stmt stmt) where T : Stmt
+        public object? Resolver<T>(Stmt stmt) where T : Stmt
         {
             T resolvedStmt = (T)stmt;
             resolvedStmt.Execute(this);

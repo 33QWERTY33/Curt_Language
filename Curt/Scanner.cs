@@ -23,7 +23,8 @@ namespace Tokenizer
             {"ask", ASK },
             {"randint", RANDINT },
             {"func", FUNC },
-            {"call", CALL }};
+            {"call", CALL },
+            {"return", RETURN }};
         private int start = 0;
         private int current = 0;
         private int line = 1;

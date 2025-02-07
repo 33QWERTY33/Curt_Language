@@ -45,9 +45,18 @@ namespace Parsing
                 case FOR: return forStmt();
                 case SHOW: return showStmt();
                 case FUNC: return funcDefStmt();
+                case RETURN: return returnStmt();
                 default:
                     return expression();
             }
+        }
+
+        // "return" expression
+        private Stmt returnStmt()
+        {
+            advance(); // this was the "return" keyword
+            Expr expr = expression();
+            return new Return(expr);
         }
 
         // funcdef_statement -> "func" IDENTIFIER "(" (IDENTIFIER)* ")" block

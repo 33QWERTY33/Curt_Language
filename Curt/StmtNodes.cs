@@ -25,6 +25,40 @@ namespace nodes
             Interpreter.globals[identifier] = this;
         }
     }
+
+    public interface ICallStackClimber
+    {
+        void EncapsulateValue(object? value);
+    }
+
+    class ValuePackage : Exception
+    {
+        public object? value;
+
+        public ValuePackage(object? value)
+        {
+            this.value = value;
+        }
+    }
+
+    class Return : Stmt, ICallStackClimber
+    {
+        public Expr value;
+        public override NodeType ntype => RETURN;
+        public Return(Expr value)
+        {
+            this.value = value;
+        }
+        public override void Execute(Interpreter interpreter)
+        {
+            EncapsulateValue(interpreter.Evaluate(value));
+        }
+        public void EncapsulateValue(object? value)
+        {
+            throw new ValuePackage(value);
+        }
+    }
+
     class Assignment : Stmt
     {
         public string identifier;

@@ -51,7 +51,14 @@ namespace nodes
                 }
             } else { Curt.error(line, $"parameter count and argument count mismatched. Check the function signature."); return null; }
 
-            interpreter.Interpret(functionDef.funcBlock);
+            try
+            {
+                interpreter.Interpret(functionDef.funcBlock);
+            } catch (ValuePackage delivery)
+            {
+                Interpreter.globals = globalCopy;
+                return delivery.value;
+            }
             Interpreter.globals = globalCopy;
             return null;
         }
@@ -166,7 +173,7 @@ namespace nodes
     }
     class Literal : Expr
     {
-        protected int line;
+        public int line;
         public override NodeType ntype => LITERAL;
         public virtual object value { get; }
     }
