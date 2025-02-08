@@ -32,9 +32,9 @@ namespace nodes
             {
                 Function functionDef = (Function)Interpreter.globals[funcName];
 
-                if (args.Count == functionDef.parameters.Count)
+                if (args.Count == functionDef.paramCount)
                 {
-                    if (functionDef.native) return NativeFuncExec(interpreter, (Native)functionDef); 
+                    if (functionDef.native) return NativeFuncExec(interpreter, (Native)functionDef);
                     else { return UserFuncExec(interpreter, functionDef); }
                 }
                 else { Curt.error(line, $"parameter count and argument count mismatched. Check the function signature."); return null; }
@@ -46,12 +46,43 @@ namespace nodes
         {
             int numParams = native.func.GetMethodInfo().GetParameters().Length;
 
+            // Extra ugly switch statement because Dynamic Invoke swallows exceptions and halts execution (which means I can't handle them
+            // this means I have to deal with strong typing restrictions and manual type conversions which is hard to make "DRY"
+            // also it messes with my call stack :(
             switch (numParams)
             {
-                case 0: return native.func.DynamicInvoke();
-                case 1: return native.func.DynamicInvoke(interpreter.Interpret(args[0]));
-                case 2: return native.func.DynamicInvoke(interpreter.Interpret(args[0]), interpreter.Interpret(args[1]));
-                case 3: return native.func.DynamicInvoke(interpreter.Interpret(args[0]), interpreter.Interpret(args[1]), interpreter.Interpret(args[2]));
+                case 0: 
+                    Func<object?> func1 = (Func<object?>)native.func; 
+                    object result1 = func1.Invoke();
+                    if (result1 is string) return (string)result1;
+                    else if (result1 is bool) return (bool)result1;
+                    else if (result1 is float) return (float)result1;
+                    else if (result1 is null) return null;
+                    else { throw new RTE("native function call", "Invalid type returned from native function"); }
+                case 1: 
+                    Func<object?, object?> func2 = (Func<object?, object?>)native.func;
+                    object result2 = func2.Invoke(interpreter.Interpret(args[0]));
+                    if (result2 is string) return (string)result2;
+                    else if (result2 is bool) return (bool)result2;
+                    else if (result2 is float) return (float)result2;
+                    else if (result2 is null) return null;
+                    else { throw new RTE("native function call", "Invalid type returned from native function"); }
+                case 2:
+                    Func<object?, object?, object?> func3 = (Func<object?, object?, object?>)native.func;
+                    object result3 = func3.Invoke(interpreter.Interpret(args[0]), interpreter.Interpret(args[1]));
+                    if (result3 is string) return (string)result3;
+                    else if (result3 is bool) return (bool)result3;
+                    else if (result3 is float) return (float)result3;
+                    else if (result3 is null) return null;
+                    else { throw new RTE("native function call", "Invalid type returned from native function"); }
+                case 3:
+                    Func<object?, object?, object?, object?> func4 = (Func<object?, object?, object?, object?>)native.func;
+                    object result4 = func4.Invoke(interpreter.Interpret(args[0]), interpreter.Interpret(args[1]), interpreter.Interpret(args[2]));
+                    if (result4 is string) return (string)result4;
+                    else if (result4 is bool) return (bool)result4;
+                    else if (result4 is float) return (float)result4;
+                    else if (result4 is null) return null;
+                    else { throw new RTE("native function call", "Invalid type returned from native function"); }
                 default:
                     Curt.error(line, "Unsupported number of params in built-in function detected.");
                     return null;
@@ -104,7 +135,7 @@ namespace nodes
                     case (MINUS): return (Func<float, float>)(p1 => -p1);
                     case (INCREMENT): return (Func<float, float>)(p1 => ++p1);
                     case (DECREMENT): return (Func<float, float>)(p1 => --p1);
-                    default: throw new InvalidOperationException("Unexpected unary operator");
+                    default: Curt.error(line, "Unexpected unary operator"); return null;
                 }
             }
         }
@@ -157,7 +188,7 @@ namespace nodes
                     case BANG_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strNotEquals((string)p1, (string)p2) : !p1.Equals(p2));
                     case AND: return (Func<bool, bool, bool>)((p1, p2) => p1 && p2);
                     case OR: return (Func<bool, bool, bool>)((p1, p2) => p1 || p2);
-                    default: throw new InvalidOperationException("Unexpected binary operator");
+                    default: Curt.error(line, "Unexpected binary operator"); return null;
                 }
             }
         }

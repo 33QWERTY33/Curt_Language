@@ -11,15 +11,17 @@ namespace nodes
 
     class Function : Stmt
     {
-        public string identifier;
-        public List<string> parameters;
+        public string? identifier;
+        public List<string>? parameters;
+        public int paramCount;
         public Block? funcBlock;
         public virtual bool native { get; } = false;
         public override NodeType ntype => FUNCTION;
-        public Function(string identifier, List<string> parameters, Block? funcBlock)
+        public Function(string identifier, List<string> parameters, int paramCount,  Block? funcBlock)
         {
             this.identifier = identifier;
             this.parameters = parameters ?? new List<string>();
+            this.paramCount = paramCount;
             this.funcBlock = funcBlock;
         }
         public override void Execute(Interpreter interpreter)
@@ -34,15 +36,10 @@ namespace nodes
         public override bool native { get; } = true;
         public Delegate func;
 
-        public Native(string identifier, List<string> parameters, Delegate func) : base(identifier, parameters, null)
+        public Native(Delegate func, int paramCount) : base(null, null, paramCount, null)
         {
             this.func = func;
         }
-    }
-
-    public interface ICallStackClimber
-    {
-        void EncapsulateValue(object? value);
     }
 
     class ValuePackage : Exception
@@ -55,7 +52,7 @@ namespace nodes
         }
     }
 
-    class Return : Stmt, ICallStackClimber
+    class Return : Stmt
     {
         public Expr value;
         public override NodeType ntype => RETURN;
@@ -65,11 +62,7 @@ namespace nodes
         }
         public override void Execute(Interpreter interpreter)
         {
-            EncapsulateValue(interpreter.Evaluate(value));
-        }
-        public void EncapsulateValue(object? value)
-        {
-            throw new ValuePackage(value);
+            throw new ValuePackage(interpreter.Evaluate(value));
         }
     }
 

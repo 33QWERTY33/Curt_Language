@@ -5,13 +5,33 @@ using StdLib;
 
 namespace Interpreting
 {
+    class RTE : Exception
+    {
+        public string location;
+        public string reason;
+        public RTE(string location, string reason)
+        {
+            this.location = location;
+            this.reason = reason;
+        }
+    }
+
     class Interpreter
     {
         List<Stmt> statements;
         public static Dictionary<string, object> globals = new Dictionary<string, object> {
-            {"show",  new Native("show", new List<string> {"msg"}, Lib.show)},
-            {"ask",  new Native("ask", new List<string> {"msg"}, Lib.ask)},
+            {"ascii",  new Native(Lib.ascii, 1)},
+            {"abs",  new Native(Lib.abs, 1)},
+            {"ask",  new Native(Lib.ask, 1)},
+            {"pow",  new Native(Lib.pow, 2)},
+            {"rand",  new Native(Lib.rand, 1)},
+            {"show",  new Native(Lib.show, 1)},
+            {"sqrt",  new Native(Lib.sqrt, 1)},
+            {"locals",  new Native(Lib.locals, 0)},
         };
+
+        public static bool runTimeErrorOccurred;
+
         public Interpreter(List<Stmt> statements)
         {
             this.statements = statements;
@@ -21,7 +41,15 @@ namespace Interpreting
         {
             foreach (Stmt stmt in stmts)
             {
-                Interpret(stmt);
+                if (runTimeErrorOccurred) { return null; }
+                try
+                {
+                    Interpret(stmt);
+                } catch (RTE e)
+                {
+                    Console.WriteLine($"[Run Time Error] Error in: {e.location} because: {e.reason}.");
+                    runTimeErrorOccurred = true;
+                } 
             }
             return null;
         }
@@ -77,7 +105,8 @@ namespace Interpreting
             }
             else
             {
-                throw new InvalidOperationException("Unsupported expression type");
+                Curt.error(-1, "Congrats! You broke my expression evaluator");
+                return null;
             }
         }
 

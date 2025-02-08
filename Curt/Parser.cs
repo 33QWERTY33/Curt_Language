@@ -75,7 +75,7 @@ namespace Parsing
 
             Block funcBlock = block();
 
-            return new Function(identifier.lexeme, parameters, funcBlock);
+            return new Function(identifier.lexeme, parameters, parameters.Count, funcBlock);
         }
 
         // assignment_statement -> "make" IDENTIFIER state ";"
