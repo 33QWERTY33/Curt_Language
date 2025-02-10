@@ -40,6 +40,10 @@ namespace nodes
         {
             this.func = func;
         }
+        public override string ToString()
+        {
+            return "Built-In";
+        }
     }
 
     class ValuePackage : Exception

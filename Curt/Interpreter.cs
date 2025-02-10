@@ -24,10 +24,12 @@ namespace Interpreting
             {"abs",  new Native(Lib.abs, 1)},
             {"ask",  new Native(Lib.ask, 1)},
             {"pow",  new Native(Lib.pow, 2)},
+            {"numToStr",  new Native(Lib.numToStr, 1)},
             {"rand",  new Native(Lib.rand, 1)},
             {"show",  new Native(Lib.show, 1)},
             {"sqrt",  new Native(Lib.sqrt, 1)},
             {"locals",  new Native(Lib.locals, 0)},
+            {"strToNum",  new Native(Lib.strToNum, 1)},
         };
 
         public static bool runTimeErrorOccurred;
@@ -41,14 +43,13 @@ namespace Interpreting
         {
             foreach (Stmt stmt in stmts)
             {
-                if (runTimeErrorOccurred) { return null; }
                 try
                 {
                     Interpret(stmt);
                 } catch (RTE e)
                 {
                     Console.WriteLine($"[Run Time Error] Error in: {e.location} because: {e.reason}.");
-                    runTimeErrorOccurred = true;
+                    break;
                 } 
             }
             return null;
@@ -96,18 +97,13 @@ namespace Interpreting
                 Identifier variable = (Identifier)expr;
                 object result = variable.operation.DynamicInvoke(globals, variable.name);
                 if (result != null) return result;
-                Curt.error(variable.line, $"The identifier \"{variable.name}\" is not defined");
-                return null;
+                throw new RTE($"variable resolution [line {variable.line}]", $"The identifier \"{variable.name}\" is not defined");
             } else if (expr.ntype == CALL)
             {
                 Call resolvedExpr = (Call)expr;
                 return resolvedExpr.Execute(this);
             }
-            else
-            {
-                Curt.error(-1, "Congrats! You broke my expression evaluator");
-                return null;
-            }
+            else { throw new RTE("-1", "Congrats! You broke my expression evaluator"); }
         }
 
         public object? Resolver<T>(Stmt stmt) where T : Stmt

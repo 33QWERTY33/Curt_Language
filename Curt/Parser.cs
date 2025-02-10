@@ -4,7 +4,16 @@ using static Tokenizer.TokType;
 
 namespace Parsing
 {
-    internal class Parser
+    class ParseError : Exception
+    {
+        public string msg;
+        public ParseError(int line, string msg)
+        {
+            this.msg = $"[Parse Error] : [Line {line}] " + msg;
+        }
+    }
+
+    class Parser
     {
         private List<Token> tokens;
         private int currentToken;
@@ -16,9 +25,14 @@ namespace Parsing
         public List<Stmt> parse()
         {
             List<Stmt> statements = new List<Stmt>();
-            while (!isAtEnd())
+            while (!isAtEnd() && !Curt.hadParseError)
             {
-                statements.Add(statement());
+                try { statements.Add(statement()); }
+                catch (ParseError PE)
+                {
+                    Curt.hadParseError = true;
+                    Console.WriteLine(PE.msg);
+                }
             }
             return statements;
         }
@@ -27,6 +41,7 @@ namespace Parsing
             List<Stmt> statements = new List<Stmt>();
             while (!isRightBrace())
             {
+                if (peek().type == EOF) { throw new ParseError(peek().line, "Detected unclosed block statement."); }
                 statements.Add(statement());
             }
             advance(); // this would be the } character
@@ -37,6 +52,7 @@ namespace Parsing
         private Stmt statement()
         {
             Token token = peek();
+
             switch (token.type)
             {
                 case MAKE: return assignmentStmt();
@@ -81,6 +97,7 @@ namespace Parsing
         // assignment_statement -> "make" IDENTIFIER state ";"
         private Stmt assignmentStmt()
         {
+            if (peek().type != MAKE) { throw new ParseError(peek().line, "Assignment statements must start with a 'make' keyword"); }
             advance(); // this was the 'make' keyword
             Token identifier = consume(IDENTIFIER, "Expected identifier after 'make' keyword.");
             consume(EQUAL, "Expected '=' after identifier in assignment statement");
@@ -90,25 +107,31 @@ namespace Parsing
         // if_statement -> "if" "(" expression ")" block("elif" "(" expression ")" block)* ("else" block)?
         private Stmt ifStmt()
         {
+            Comparison ifCondition;
+            List<Comparison> elifConditions = new List<Comparison>();
+            List<Block> elifBlocks = new List<Block>();
+            Block elseBlock = null;
+
             advance(); // this was the 'if' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'if' keyword.");
-            Comparison ifCondition = (Comparison)expression();
+            try { ifCondition = (Comparison)expression(); }
+            catch (InvalidCastException e) { throw new ParseError(peek().line, "malformed if condition detected. Expected a comparison expression."); }
             consume(RIGHT_PAREN, "Expected ')' character after 'if' condition.");
             Block ifBlock = block();
 
-            List<Comparison> elifConditions = new List<Comparison>();
-            List<Block> elifBlocks = new List<Block>();
 
             while (peek().type == ELIF)
             {
+                Comparison currentCondition;
                 advance(); // this was the 'elif' keyword
                 consume(LEFT_PAREN, "Expected '(' character after 'elif' keyword.");
-                elifConditions.Add((Comparison)expression());
+                try { currentCondition = (Comparison)expression(); }
+                catch (InvalidCastException e) { throw new ParseError(peek().line, "Malformed elif condition detected. Expected a comparison."); }
+                elifConditions.Add(currentCondition);
                 consume(RIGHT_PAREN, "Expected ')' character after 'elif' condition.");
                 elifBlocks.Add(block());
             }
 
-            Block elseBlock = null;
 
             if (peek().type == ELSE)
             {
@@ -122,9 +145,13 @@ namespace Parsing
         // while_statement -> "while" "(" expression ")" block
         private Stmt whileStmt()
         {
+            Comparison whileCondition;
+
             advance(); // this was the 'while' keyword
-            consume(LEFT_PAREN, "Expected ')' character after 'while' keyword.");
-            Comparison whileCondition = (Comparison)expression();
+            consume(LEFT_PAREN, "Expected '(' character after 'while' keyword.");
+            try { whileCondition = (Comparison)expression(); }
+            catch (InvalidCastException e) { throw new ParseError(peek().line, "malformed while condition detected. Expected comparison expression.");  }
+            
             consume(RIGHT_PAREN, "Expected ')' character after 'while' condition.");
             Block whileBlock = block();
             return new While(whileCondition, whileBlock);
@@ -134,11 +161,20 @@ namespace Parsing
         {
             advance(); // this was the 'for' keyword
             consume(LEFT_PAREN, "Expected '(' character after 'for' keyword.");
-            Assignment start = (Assignment)assignmentStmt();
+            Assignment start;
+            try { start = (Assignment)assignmentStmt(); }
+            catch (InvalidCastException e) { throw new ParseError(peek().line, "There was a malformed 'start' expression in the for statement. Expected an assignment expression."); }
+            if (start.value == null) { throw new ParseError(peek().line, "'start' section of for loop featured a declared but undefined variable"); }
+            if (start.value.GetType().Name != "Number") { Curt.error(peek().line, "Make sure the first statement in a for loop is a numerical assignment"); return null; }
             consume(SEMICOLON, "Expected ';' after 'start' portion of for loop");
-            Comparison stop = (Comparison)expression();
+            Comparison stop;
+            try { stop = (Comparison)expression(); }
+            catch (InvalidCastException e) { throw new ParseError(peek().line, "There was a malformed 'stop' expression in the for statment. Expected a comparison expression."); }
+            
             consume(SEMICOLON, "Expected ';' after 'stop' portion of for loop");
-            Step step = (Step)expression();
+            Step step;
+            try { step = (Step)expression(); } 
+            catch (InvalidCastException e) { Curt.error(peek().line, "There was a malformed 'step' expression in the for statement. Expected a step expression."); return null; }
             consume(RIGHT_PAREN, "Expected ')' character after 'for' condition.");
             Block forBlock = block();
             return new For(start, stop, step, forBlock);
@@ -225,9 +261,10 @@ namespace Parsing
 
             Token funcTok = consume(IDENTIFIER, "Expected function identifier for call expression");
             string funcName = funcTok.lexeme;
-            consume(LEFT_PAREN, "Expected '(' after function identifier for call expression");
+            if (!match(LEFT_PAREN)) { Curt.error(funcTok.line, "Expected '(' after function identifier"); return null; }
             while(!match(RIGHT_PAREN))
             {
+                if (peek().type == EOF) { Curt.error(funcTok.line, "Unclosed parentheses in call operation"); return null; }
                 args.Add(expression());
                 if (peek().type != RIGHT_PAREN) { consume(COMMA, "arguments should be seperated by commas."); }
             }
@@ -267,9 +304,7 @@ namespace Parsing
         {
             if (check(type)) return advance();
 
-            error(peek(), msg);
-            return new Token(EOF, "ERROR", "ERROR", 0);
-            // [WIP] I want to find a better way to handle this later
+            throw new ParseError(peek().line, msg);
         }
 
         static void error(Token token, string msg)

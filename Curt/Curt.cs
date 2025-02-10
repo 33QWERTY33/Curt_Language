@@ -22,6 +22,7 @@ public class Curt {
         while (true) {
             hadSyntaxError = false;
             hadParseError = false;
+            Interpreter.runTimeErrorOccurred = false;
             Console.Write(">>> ");
             string stmt = Console.ReadLine() ?? "  ";
             run(stmt);

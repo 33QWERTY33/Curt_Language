@@ -4,6 +4,7 @@ using static nodes.NodeType;
 using nodes;
 using Interpreting;
 using System.Reflection;
+using System;
 
 namespace nodes
 {
@@ -46,20 +47,20 @@ namespace nodes
         {
             int numParams = native.func.GetMethodInfo().GetParameters().Length;
 
-            // Extra ugly switch statement because Dynamic Invoke swallows exceptions and halts execution (which means I can't handle them
-            // this means I have to deal with strong typing restrictions and manual type conversions which is hard to make "DRY"
+            // Extra ugly switch statement because Dynamic Invoke swallows exceptions and halts execution (which means I can't handle them)
+            // this means I have to deal with strong typing restrictions and manual type conversions which is hard to make "DRY" because of Invoke method
             // also it messes with my call stack :(
             switch (numParams)
             {
-                case 0: 
-                    Func<object?> func1 = (Func<object?>)native.func; 
+                case 0:
+                    Func<object?> func1 = (Func<object?>)native.func;
                     object result1 = func1.Invoke();
                     if (result1 is string) return (string)result1;
                     else if (result1 is bool) return (bool)result1;
                     else if (result1 is float) return (float)result1;
                     else if (result1 is null) return null;
                     else { throw new RTE("native function call", "Invalid type returned from native function"); }
-                case 1: 
+                case 1:
                     Func<object?, object?> func2 = (Func<object?, object?>)native.func;
                     object result2 = func2.Invoke(interpreter.Interpret(args[0]));
                     if (result2 is string) return (string)result2;
@@ -175,7 +176,12 @@ namespace nodes
             {
                 switch (type)
                 {
-                    case PLUS: return (Func<object, object, object>)((p1, p2) => p1.GetType() == typeof(string) ? Concat((string)p1, (string)p2) : (float)p1 + (float)p2);
+                    case PLUS:
+                        return (Func<object, object, object?>)((p1, p2) =>
+                    {
+                        try { return p1.GetType() == typeof(string) ? Concat((string)p1, (string)p2) : (float)p1 + (float)p2; }
+                        catch (InvalidCastException e) { Curt.error(line, $"There is a mismatch of typings in the addition operation involving: {p1} and {p2}. Returned zilch by default."); return null; }
+                    });
                     case MINUS: return (Func<float, float, float>)((p1, p2) => p1 - p2);
                     case SLASH: return (Func<float, float, float>)((p1, p2) => p1 / p2);
                     case STAR: return (Func<float, float, float>)((p1, p2) => p1 * p2);
@@ -184,8 +190,18 @@ namespace nodes
                     case GREATER_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 >= p2);
                     case LESS: return (Func<float, float, bool>)((p1, p2) => p1 < p2);
                     case LESS_EQUAL: return (Func<float, float, bool>)((p1, p2) => p1 <= p2);
-                    case EQUAL_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : p1.Equals(p2));
-                    case BANG_EQUAL: return (Func<object, object, bool>)((p1, p2) => p1.GetType() == typeof(string) ? strNotEquals((string)p1, (string)p2) : !p1.Equals(p2));
+                    case EQUAL_EQUAL:
+                        return (Func<object, object, bool?>)((p1, p2) =>
+                        {
+                            try { return p1.GetType() == typeof(string) ? strEquals((string)p1, (string)p2) : p1.Equals(p2); }
+                            catch (InvalidCastException ICE) { Curt.error(line, $"There is a mismatch of typings in the equality comparison operation involving: {p1} and {p2}. Returned zilch by default."); return null; }
+                        });
+                    case BANG_EQUAL:
+                        return (Func<object, object, bool?>)((p1, p2) =>
+                        {
+                            try { return p1.GetType() == typeof(string) ? strNotEquals((string)p1, (string)p2) : !p1.Equals(p2); }
+                            catch (InvalidCastException e) { Curt.error(line, $"There is a mismatch of typings in your inequality comparison operation involving: {p1} and {p2}. Returned zilch by default."); return null; }
+                        });
                     case AND: return (Func<bool, bool, bool>)((p1, p2) => p1 && p2);
                     case OR: return (Func<bool, bool, bool>)((p1, p2) => p1 || p2);
                     default: Curt.error(line, "Unexpected binary operator"); return null;
