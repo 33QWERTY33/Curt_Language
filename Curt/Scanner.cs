@@ -59,6 +59,7 @@ namespace Tokenizer
                 case '%': addToken(PERCENT); break;
                 case '@': addToken(CALL); break;
                 case '~': addToken(MAKE); break;
+                case '$': addToken(FUNC); break;
                 case '\n': line++; break;
                 case '-':
                     addToken(match('-') ? DECREMENT : MINUS);

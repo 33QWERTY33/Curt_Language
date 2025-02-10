@@ -10,14 +10,15 @@ statement ->
     assignment_statement
     | if_statement
     | while_statement
+    | funcdef_statement
     | for_statement
     | block
 
 funcdef_statement -> 
-    "func" IDENTIFIER "(" (IDENTIFIER)* ")" block
+    ("func" | "$") IDENTIFIER "(" (IDENTIFIER)* ")" block
 
 assignment_statement -> 
-    "make" IDENTIFIER expression ";"
+    ("make" | "~") IDENTIFIER "=" expression
 
 if_statement -> 
     "if" "(" expression ")" block ("elif" "(" expression ")" block)* ("else" block)?
@@ -51,7 +52,7 @@ primary ->
     | "(" (expression)* ")" ;
 
 call ->
-    "call" IDENTIFIER "(" (expression ("," expression)*)? ")" 
+    ("call" | "@")IDENTIFIER "(" (expression ("," expression)*)? ")" 
 
 literal ->
     IDENTIFIER
