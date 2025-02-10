@@ -23,13 +23,22 @@ namespace Interpreting
             {"ascii",  new Native(Lib.ascii, 1)},
             {"abs",  new Native(Lib.abs, 1)},
             {"ask",  new Native(Lib.ask, 1)},
+            {"contains",  new Native(Lib.contains, 1)},
+            {"endsWith",  new Native(Lib.endsWith, 2)},
+            {"len",  new Native(Lib.len, 1)},
             {"pow",  new Native(Lib.pow, 2)},
             {"numToStr",  new Native(Lib.numToStr, 1)},
             {"rand",  new Native(Lib.rand, 1)},
+            {"replace",  new Native(Lib.replace, 3)},
             {"show",  new Native(Lib.show, 1)},
             {"sqrt",  new Native(Lib.sqrt, 1)},
-            {"locals",  new Native(Lib.locals, 0)},
             {"strToNum",  new Native(Lib.strToNum, 1)},
+            {"subStr",  new Native(Lib.subStr, 3)},
+            {"startsWith",  new Native(Lib.startsWith, 2)},
+            {"toLower",  new Native(Lib.toLower, 1)},
+            {"trim",  new Native(Lib.trim, 1)},
+            {"toUpper",  new Native(Lib.toUpper, 1)},
+            {"locals",  new Native(Lib.locals, 0)},
         };
 
         public static bool runTimeErrorOccurred;
