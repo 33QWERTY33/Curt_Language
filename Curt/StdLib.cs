@@ -48,6 +48,11 @@ namespace StdLib
             string val2 = TypeHandling.checkStr(arg2) ? (string)arg2 : throw new RTE("In native function 'endsWith'", $"Invalid argument: \"{arg2}\", expected string type for the string to search for");
             return val1.EndsWith(val2);
         }
+        public static object isNum(object arg1)
+        {
+            string val1 = TypeHandling.checkStr(arg1) ? (string)arg1 : throw new RTE("In native function 'isDigit'", $"Invalid argument: \"{arg1}\", expected string type for the string to check");
+            return int.TryParse(val1, out _);
+        }
         public static object len(object arg1)
         {
             string val1 = TypeHandling.checkStr(arg1) ? (string)arg1 : throw new RTE("In native function 'length'", $"Invalid argument: \"{arg1}\", expected string type");

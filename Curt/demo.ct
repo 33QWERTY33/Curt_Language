@@ -1,0 +1,53 @@
+﻿// Simple hello world program:
+
+@show("Hello World!")
+
+// it is also possible to use: call show("hello world!")
+
+
+
+// simple calculator program
+
+@show("")
+@show("Let's perform a calculation on two numbers!")
+@show("")
+
+~num1 = @ask("Enter the first number >>> ")
+if (@len(num1) > 0 and @isNum(num1)) {~num1 = @strToNum(num1)}
+else {@show("You didn't enter a valid number!")}
+
+~num2 = @ask("Enter the second number >>> ")
+if (@len(num2) > 0 and @isNum(num2)) {~num2 = @strToNum(num2)}
+else {@show("You didn't enter a valid number!")}
+
+~operation = @ask("What operation would you like? ie. (/, +, -, *) >>> ")
+
+@show("Your result is below: ")
+
+if (operation == "/") {
+	if (num1 == 0) {
+	@show("stop trying to break my program!!")
+	}
+	else {
+		@show(num1 / num2)
+	}
+}
+elif (operation == "+") {
+	@show(num1 + num2)
+} 
+elif (operation == "-") {
+	@show(num1 - num2)
+}
+elif (operation == "*") {
+	@show(num1*num2)
+}
+else {@show("You didn't enter a valid operation :(")}
+
+
+// display all global scope variables:
+
+@show("")
+@show("")
+@show("Below are all of the global scope values, this also displays the standard library functions so far.")
+
+@locals()

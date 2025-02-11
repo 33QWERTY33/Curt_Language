@@ -25,6 +25,7 @@ namespace Interpreting
             {"ask",  new Native(Lib.ask, 1)},
             {"contains",  new Native(Lib.contains, 1)},
             {"endsWith",  new Native(Lib.endsWith, 2)},
+            {"isNum",  new Native(Lib.isNum, 1)},
             {"len",  new Native(Lib.len, 1)},
             {"pow",  new Native(Lib.pow, 2)},
             {"numToStr",  new Native(Lib.numToStr, 1)},
