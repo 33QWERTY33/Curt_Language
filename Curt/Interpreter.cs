@@ -62,7 +62,8 @@ namespace Interpreting
                     break;
                 } catch (Exception e)
                 {
-                    Console.WriteLine("Congratulations... you broke the interpreter. Please submit a bug report with exception details and use case example");
+                    Console.WriteLine("Congratulations... you broke the interpreter. Please submit an issue report with exception details and use case example");
+                    Console.WriteLine("Submit issue report here: https://github.com/33QWERTY33/Curt_Language/issues");
                     Console.WriteLine(e.Message);
                 }
             }
