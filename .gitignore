@@ -5,7 +5,4 @@
 *.ilk
 *.pdb
 *.log
-*.obj
 *.tmp
-*.exe
-*.dll
