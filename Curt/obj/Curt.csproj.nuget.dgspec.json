@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\curle\\Desktop\\Code\\WorksInProgress\\Curt\\Curt\\Curt\\Curt.csproj": {}
+    "C:\\Users\\curle\\Desktop\\Code\\CompletedProjects\\Curt\\Curt\\Curt\\Curt.csproj": {}
   },
   "projects": {
-    "C:\\Users\\curle\\Desktop\\Code\\WorksInProgress\\Curt\\Curt\\Curt\\Curt.csproj": {
+    "C:\\Users\\curle\\Desktop\\Code\\CompletedProjects\\Curt\\Curt\\Curt\\Curt.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\curle\\Desktop\\Code\\WorksInProgress\\Curt\\Curt\\Curt\\Curt.csproj",
+        "projectUniqueName": "C:\\Users\\curle\\Desktop\\Code\\CompletedProjects\\Curt\\Curt\\Curt\\Curt.csproj",
         "projectName": "Curt",
-        "projectPath": "C:\\Users\\curle\\Desktop\\Code\\WorksInProgress\\Curt\\Curt\\Curt\\Curt.csproj",
+        "projectPath": "C:\\Users\\curle\\Desktop\\Code\\CompletedProjects\\Curt\\Curt\\Curt\\Curt.csproj",
         "packagesPath": "C:\\Users\\curle\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\curle\\Desktop\\Code\\WorksInProgress\\Curt\\Curt\\Curt\\obj\\",
+        "outputPath": "C:\\Users\\curle\\Desktop\\Code\\CompletedProjects\\Curt\\Curt\\Curt\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -60,7 +60,11 @@ namespace Interpreting
                 {
                     Console.WriteLine($"[Run Time Error] Error in: {e.location} because: {e.reason}.");
                     break;
-                } 
+                } catch (Exception e)
+                {
+                    Console.WriteLine("Congratulations... you broke the interpreter. Please submit a bug report with exception details and use case example");
+                    Console.WriteLine(e.Message);
+                }
             }
             return null;
         }
