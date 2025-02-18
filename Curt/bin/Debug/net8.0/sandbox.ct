@@ -1,7 +1,0 @@
-﻿if (1 == 2) {
-	show("hello world")
-} elif (2 == 2) {
-	show("hello ground")
-} else {
-	show("hello sky")
-}
